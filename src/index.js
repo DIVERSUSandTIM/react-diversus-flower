@@ -11,6 +11,7 @@ export default class DiversusFlower extends React.Component {
   render() {
   	const {title} = this.props;
     return (
+      <div>
         <svg height="500" width="500">
           <circle cx="50%" cy="50%" r="25%" stroke="black" stroke-width="3" fill="red" />
           <circle cx="25%" cy="25%" r="10%" stroke="black" stroke-width="3" fill="red" />
@@ -18,6 +19,7 @@ export default class DiversusFlower extends React.Component {
           <circle cx="75%" cy="75%" r="10%" stroke="black" stroke-width="3" fill="red" />
           <circle cx="25%" cy="75%" r="10%" stroke="black" stroke-width="3" fill="red" />
         </svg>
+      </div>
     );
   }
 }

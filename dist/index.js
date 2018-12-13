@@ -580,13 +580,17 @@ var DiversusFlower = function (_React$Component) {
       var title = this.props.title;
 
       return _react2.default.createElement(
-        'svg',
-        { height: '500', width: '500' },
-        _react2.default.createElement('circle', { cx: '50%', cy: '50%', r: '25%', stroke: 'black', 'stroke-width': '3', fill: 'red' }),
-        _react2.default.createElement('circle', { cx: '25%', cy: '25%', r: '10%', stroke: 'black', 'stroke-width': '3', fill: 'red' }),
-        _react2.default.createElement('circle', { cx: '75%', cy: '25%', r: '10%', stroke: 'black', 'stroke-width': '3', fill: 'red' }),
-        _react2.default.createElement('circle', { cx: '75%', cy: '75%', r: '10%', stroke: 'black', 'stroke-width': '3', fill: 'red' }),
-        _react2.default.createElement('circle', { cx: '25%', cy: '75%', r: '10%', stroke: 'black', 'stroke-width': '3', fill: 'red' })
+        'div',
+        null,
+        _react2.default.createElement(
+          'svg',
+          { height: '500', width: '500' },
+          _react2.default.createElement('circle', { cx: '50%', cy: '50%', r: '25%', stroke: 'black', 'stroke-width': '3', fill: 'red' }),
+          _react2.default.createElement('circle', { cx: '25%', cy: '25%', r: '10%', stroke: 'black', 'stroke-width': '3', fill: 'red' }),
+          _react2.default.createElement('circle', { cx: '75%', cy: '25%', r: '10%', stroke: 'black', 'stroke-width': '3', fill: 'red' }),
+          _react2.default.createElement('circle', { cx: '75%', cy: '75%', r: '10%', stroke: 'black', 'stroke-width': '3', fill: 'red' }),
+          _react2.default.createElement('circle', { cx: '25%', cy: '75%', r: '10%', stroke: 'black', 'stroke-width': '3', fill: 'red' })
+        )
       );
     }
   }]);

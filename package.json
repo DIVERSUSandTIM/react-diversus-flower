@@ -3,6 +3,10 @@
   "version": "0.0.1",
   "description": "The Diversus Flower visualization as a React component",
   "main": "dist/index.js",
+  "dependencies": {
+    "d3": "^5.7.0",
+    "huviz": "smurp/huviz#alpha"
+  },
   "devDependencies": {
     "babel-core": "^6.24.1",
     "babel-eslint": "^7.2.2",
@@ -18,12 +22,12 @@
     "eslint-plugin-jsx-a11y": "^4.0.0",
     "eslint-plugin-react": "^6.10.3",
     "jest": "^19.0.2",
+    "prop-types": "^15.5.8",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "style-loader": "^0.16.1",
     "webpack": "^2.4.1",
-    "webpack-dev-server": "^2.4.2",
-    "prop-types": "^15.5.8"
+    "webpack-dev-server": "^2.4.2"
   },
   "scripts": {
     "server": "./node_modules/.bin/webpack-dev-server --hot --inline",
