@@ -7,7 +7,7 @@
 		exports["DiversusFlower"] = factory(require("react"));
 	else
 		root["DiversusFlower"] = factory(root["react"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_7__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_3__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 8);
+/******/ 	return __webpack_require__(__webpack_require__.s = 9);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -370,6 +370,12 @@ module.exports = invariant;
 
 /***/ }),
 /* 3 */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE_3__;
+
+/***/ }),
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -442,7 +448,7 @@ module.exports = warning;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -463,7 +469,8 @@ module.exports = ReactPropTypesSecret;
 
 
 /***/ }),
-/* 5 */
+/* 6 */,
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(process) {/**
@@ -490,26 +497,26 @@ if (process.env.NODE_ENV !== 'production') {
   // By explicitly using `prop-types` you are opting into new development behavior.
   // http://fb.me/prop-types-in-prod
   var throwOnDirectAccess = true;
-  module.exports = __webpack_require__(17)(isValidElement, throwOnDirectAccess);
+  module.exports = __webpack_require__(18)(isValidElement, throwOnDirectAccess);
 } else {
   // By explicitly using `prop-types` you are opting into new production behavior.
   // http://fb.me/prop-types-in-prod
-  module.exports = __webpack_require__(16)();
+  module.exports = __webpack_require__(17)();
 }
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 6 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(11);
+var content = __webpack_require__(12);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // add the styles to the DOM
-var update = __webpack_require__(18)(content, {});
+var update = __webpack_require__(19)(content, {});
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -526,13 +533,7 @@ if(false) {
 }
 
 /***/ }),
-/* 7 */
-/***/ (function(module, exports) {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE_7__;
-
-/***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -541,18 +542,19 @@ module.exports = __WEBPACK_EXTERNAL_MODULE_7__;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.Petal = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _react = __webpack_require__(7);
+var _react = __webpack_require__(3);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _propTypes = __webpack_require__(5);
+var _propTypes = __webpack_require__(7);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-__webpack_require__(6);
+__webpack_require__(8);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -562,34 +564,295 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var DiversusFlower = function (_React$Component) {
-  _inherits(DiversusFlower, _React$Component);
+//import Ball from './Ball';
+//import Petal from './Petal';
+
+var Reticle = function (_React$Component) {
+  _inherits(Reticle, _React$Component);
+
+  function Reticle() {
+    _classCallCheck(this, Reticle);
+
+    return _possibleConstructorReturn(this, (Reticle.__proto__ || Object.getPrototypeOf(Reticle)).apply(this, arguments));
+  }
+
+  _createClass(Reticle, [{
+    key: 'renderLines',
+    value: function renderLines() {
+      var x,
+          y,
+          rays = this.props.rays,
+          rayLength = this.props.rayLength,
+          lines = [],
+          i = 0,
+          twoPI = Math.PI * 2,
+          inc = twoPI / rays;
+
+      while (i < twoPI) {
+        x = Math.cos(i) * rayLength;
+        y = Math.sin(i) * rayLength;
+        lines.push(_react2.default.createElement('line', { x2: x, y2: y }));
+        i = i + inc;
+      }
+
+      lines.push(_react2.default.createElement('line', { x1: -100, y1: -100, x2: 100, y2: 100, stroke: 'red' }));
+      lines.push(_react2.default.createElement('line', { x1: 100, y1: -100, x2: -100, y2: 100, stroke: 'red' }));
+
+      return lines;
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'g',
+        { stroke: this.props.color, x1: this.props.cx, y1: this.props.cy, strokeWidth: '1' },
+        this.renderLines()
+      );
+    }
+  }]);
+
+  return Reticle;
+}(_react2.default.Component);
+
+Reticle.propTypes = {
+  rays: _propTypes2.default.number.isRequried,
+  rayLength: _propTypes2.default.number.isRequried,
+  cx: _propTypes2.default.number.isRequired,
+  cy: _propTypes2.default.number.isRequired,
+  color: _propTypes2.default.string.isRequired
+};
+
+Reticle.defaultProps = {
+  rays: 24,
+  rayLength: 250,
+  cx: 0,
+  cy: 0,
+  color: 'lightgrey'
+};
+
+var Petal = exports.Petal = function (_React$Component2) {
+  _inherits(Petal, _React$Component2);
+
+  function Petal(props) {
+    _classCallCheck(this, Petal);
+
+    var _this2 = _possibleConstructorReturn(this, (Petal.__proto__ || Object.getPrototypeOf(Petal)).call(this, props));
+
+    _this2.flower = props.flower;
+    if (!_this2.flower) {
+      throw new Error('no flower for ', _this2.props.relPos);
+    }
+    // state:
+    //   petalRadius: 12 // the radius (in pixels) of the petal
+    //   angle: 0 // the angle of the center of this petal to its parent's center
+    //   cx: 0.0  // the x coordinate of the center of this petal
+    //   cy: 0.0  // the y coordinate of the center of this petal
+    return _this2;
+  }
+
+  _createClass(Petal, [{
+    key: 'calcPetalRadius',
+    value: function calcPetalRadius() {
+      var theta = Math.PI * 2 / this.flower.props.numberOfPrimaryPetals;
+      var st2 = Math.sin(theta / 2);
+      var R = this.flower.state.centralRadius;
+      /*
+          r = (R * sin(theta/2) /(1 - sin(theta/2))
+      */
+      var r = R * st2 / (1 - st2);
+      return r;
+    }
+  }, {
+    key: 'getAngle',
+    value: function getAngle(relPos) {
+      return 2 * Math.PI * relPos - Math.PI / 2;
+    }
+  }, {
+    key: 'componentWillMount',
+    value: function componentWillMount() {
+      // https://developmentarc.gitbooks.io/react-indepth/content/life_cycle/birth/premounting_with_componentwillmount.html
+      var centralRadius = this.flower.state.centralRadius // the radius of the central circle
+      ,
+          angle = this.getAngle(this.props.relPos),
+          petalRadius = this.calcPetalRadius(),
+          deltaState = {
+        petalRadius: petalRadius,
+        cx: Math.cos(angle) * (centralRadius + petalRadius),
+        cy: Math.sin(angle) * (centralRadius + petalRadius) };
+      //console.log(deltaState);
+      //console.log("this.state:",this.state);
+      this.setState(deltaState);
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var fill = this.props.fill;
+      var _state = this.state,
+          cx = _state.cx,
+          cy = _state.cy,
+          centralRadius = _state.centralRadius,
+          petalRadius = _state.petalRadius;
+
+
+      console.log("render", this.state);
+      //         <line x1=0 y1=0 x2={cx} y2={cy} strokeWidth="3" stroke="black" />
+      return _react2.default.createElement(
+        'g',
+        { strokeWidth: '1', stroke: 'black', x1: '0', y1: '0', fontSize: '5px' },
+        _react2.default.createElement('line', { x2: cx, y2: cy, stroke: 'none' }),
+        _react2.default.createElement('circle', { cx: cx, cy: cy, r: petalRadius, stroke: 'black', fill: fill }),
+        _react2.default.createElement(
+          'text',
+          { stroke: 'none', fill: 'white',
+            x: cx, y: cy },
+          this.props.relPos.toString().substring(0, 4)
+        )
+      );
+    }
+  }]);
+
+  return Petal;
+}(_react2.default.Component);
+
+Petal.propTypes = {
+  relPos: _propTypes2.default.number.isRequired,
+  key: _propTypes2.default.string.isRequired,
+  fill: _propTypes2.default.string.isRequired,
+  initialPriority: _propTypes2.default.number.isRequired
+};
+
+Petal.defaultProps = {
+  fill: 'orange',
+  initialPriority: 1.0
+};
+
+var divStyle = {
+  'height': '500px',
+  'width': '500px'
+};
+
+var DiversusFlower = function (_React$Component3) {
+  _inherits(DiversusFlower, _React$Component3);
 
   function DiversusFlower(props) {
     _classCallCheck(this, DiversusFlower);
 
-    var _this = _possibleConstructorReturn(this, (DiversusFlower.__proto__ || Object.getPrototypeOf(DiversusFlower)).call(this, props));
+    var _this3 = _possibleConstructorReturn(this, (DiversusFlower.__proto__ || Object.getPrototypeOf(DiversusFlower)).call(this, props));
 
-    _this.state = {};
-    return _this;
+    _this3.state = { centralRadius: 50 };
+    if (props.whosYourDaddy) {
+      _this3.daddy = props.whosYourDaddy(_this3);
+    }
+    _this3.petals = [];
+    return _this3;
   }
 
   _createClass(DiversusFlower, [{
+    key: 'toggleRandomStream',
+    value: function toggleRandomStream() {
+      if (this.randomStreamTimer) {
+        console.log("TOGGLE randomStream off");
+        this.stopRandomStream();
+      } else {
+        console.log("TOGGLE randomStream on");
+        this.startRandomStream();
+      }
+    }
+  }, {
+    key: 'startRandomStream',
+    value: function startRandomStream(interval) {
+      interval = interval || 800;
+      console.log('startRandomStream');
+      this.daddy.addRandomPetal(); // run one now!
+      var daddy = this.daddy; // is this needed anymore?
+      this.randomStreamTimer = setInterval(function () {
+        daddy.addRandomPetal();
+      }, interval);
+    }
+  }, {
+    key: 'stopRandomStream',
+    value: function stopRandomStream() {
+      if (this.randomStreamTimer) {
+        clearInterval(this.randomStreamTimer);
+        delete this.randomStreamTimer;
+      } else {
+        alert('no randomStreamTimer found');
+      }
+    }
+  }, {
+    key: 'addPetal',
+    value: function addPetal(args) {
+      this.petals.push(_react2.default.createElement(Petal, { relPos: args.relPos, flower: this }));
+      //this.forceUpdate();
+    }
+  }, {
+    key: 'renderRingOfPetals',
+    value: function renderRingOfPetals() {
+      // https://en.wikipedia.org/wiki/Malfatti_circles
+      // https://math.stackexchange.com/questions/1407779/arranging-circles-around-a-circle
+      // http://www.packomania.com/
+      var retval = [];
+      var max = this.props.numberOfPrimaryPetals;
+      for (var i = 0; i < max; i++) {
+        retval.push(_react2.default.createElement(Petal, { relPos: i / max, fill: 'purple', flower: this }));
+      }
+      return retval;
+    }
+  }, {
+    key: 'renderPetals',
+    value: function renderPetals() {
+      var retval = [];
+      //for (let i = 0; i < this.petals.length; i++) {
+      this.petals.forEach(function (args, i) {
+        var key = args.key,
+            relPos = args.relPos;
+
+        retval.push(_react2.default.createElement(Petal, { relPos: relPos, key: key, flower: this }));
+      });
+      return retval;
+    }
+  }, {
+    key: 'componentWillMount',
+    value: function componentWillMount() {
+      // https://developmentarc.gitbooks.io/react-indepth/content/life_cycle/birth/premounting_with_componentwillmount.html
+      // prepare the initial state of the flower, here doing whatever calcs should preceed render() and follow constructor()
+      console.log('componentWillMount()');
+      var flowerMinDimension = 100; // TODO get this from the parent somehow?
+      this.setState({
+        centralRadius: this.props.proportionOfCenter * flowerMinDimension
+      });
+    }
+
+    // https://codeburst.io/4-four-ways-to-style-react-components-ac6f323da822
+    // https://www.sarasoueidan.com/blog/svg-coordinate-systems/
+
+  }, {
     key: 'render',
     value: function render() {
+      //  transform="translate(250,250)"
       var title = this.props.title;
 
+      window.zeFlower = this;
       return _react2.default.createElement(
         'div',
-        null,
+        { style: divStyle },
         _react2.default.createElement(
           'svg',
-          { height: '500', width: '500' },
-          _react2.default.createElement('circle', { cx: '50%', cy: '50%', r: '25%', stroke: 'black', 'stroke-width': '3', fill: 'red' }),
-          _react2.default.createElement('circle', { cx: '25%', cy: '25%', r: '10%', stroke: 'black', 'stroke-width': '3', fill: 'red' }),
-          _react2.default.createElement('circle', { cx: '75%', cy: '25%', r: '10%', stroke: 'black', 'stroke-width': '3', fill: 'red' }),
-          _react2.default.createElement('circle', { cx: '75%', cy: '75%', r: '10%', stroke: 'black', 'stroke-width': '3', fill: 'red' }),
-          _react2.default.createElement('circle', { cx: '25%', cy: '75%', r: '10%', stroke: 'black', 'stroke-width': '3', fill: 'red' })
+          { height: '100%', width: '100%', viewBox: '-100 -100 200 200' },
+          _react2.default.createElement(
+            'title',
+            null,
+            title
+          ),
+          _react2.default.createElement(
+            'g',
+            null,
+            _react2.default.createElement(Reticle, { rayLength: this.props.reticleRayLength, rays: this.props.reticleRays }),
+            _react2.default.createElement('circle', { cx: '0', cy: '0', r: this.state.centralRadius, stroke: 'black', strokeWidth: '1', fill: 'red',
+              onClick: this.toggleRandomStream.bind(this) }),
+            this.renderRingOfPetals(),
+            this.renderPetals()
+          )
         )
       );
     }
@@ -598,21 +861,41 @@ var DiversusFlower = function (_React$Component) {
   return DiversusFlower;
 }(_react2.default.Component);
 
+/*
+            <Petal relPos=".125" fill={'yellow'} flower={this}/>
+            <Petal relPos=".25" fill={'yellow'} flower={this}/>
+            <Petal relPos=".375" fill={'yellow'} flower={this}/>
+            <Petal relPos=".50" fill={'yellow'} flower={this}/>
+            <Petal relPos=".625" fill={'yellow'} flower={this}/>
+            <Petal relPos=".75" fill={'yellow'} flower={this}/>
+            <Petal relPos=".875" fill={'yellow'} flower={this}/>
+            <Petal relPos="1.0" fill={'yellow'} flower={this}/>
+            <Petal relPos=".58" flower={this}/>
+*/
+
 // Proptypes
 
 
 exports.default = DiversusFlower;
 DiversusFlower.propTypes = {
-  title: _propTypes2.default.string.isRequired
+  title: _propTypes2.default.string.isRequired,
+  numberOfPrimaryPetals: _propTypes2.default.number.isRequired,
+  proportionOfCenter: _propTypes2.default.number.isRequired,
+  reticleRays: _propTypes2.default.number.isRequired,
+  reticleRayLength: _propTypes2.default.number.isRequired
 };
 
 // Default proptypes
 DiversusFlower.defaultProps = {
-  title: "Hello"
+  title: "Hello",
+  numberOfPrimaryPetals: 11,
+  proportionOfCenter: .33,
+  reticleRays: 80,
+  reticleRayLength: 90
 };
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -733,7 +1016,7 @@ function fromByteArray (uint8) {
 
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -747,9 +1030,9 @@ function fromByteArray (uint8) {
 
 
 
-var base64 = __webpack_require__(9)
-var ieee754 = __webpack_require__(13)
-var isArray = __webpack_require__(14)
+var base64 = __webpack_require__(10)
+var ieee754 = __webpack_require__(14)
+var isArray = __webpack_require__(15)
 
 exports.Buffer = Buffer
 exports.SlowBuffer = SlowBuffer
@@ -2527,13 +2810,13 @@ function isnan (val) {
   return val !== val // eslint-disable-line no-self-compare
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(20)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(21)))
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(12)(undefined);
+exports = module.exports = __webpack_require__(13)(undefined);
 // imports
 
 
@@ -2544,7 +2827,7 @@ exports.push([module.i, "h1 {\n\ttext-align: center;\n}\n", ""]);
 
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(Buffer) {/*
@@ -2623,10 +2906,10 @@ function toComment(sourceMap) {
   return '/*# ' + data + ' */';
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10).Buffer))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11).Buffer))
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports) {
 
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -2716,7 +2999,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports) {
 
 var toString = {}.toString;
@@ -2727,7 +3010,7 @@ module.exports = Array.isArray || function (arr) {
 
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2744,8 +3027,8 @@ module.exports = Array.isArray || function (arr) {
 
 if (process.env.NODE_ENV !== 'production') {
   var invariant = __webpack_require__(2);
-  var warning = __webpack_require__(3);
-  var ReactPropTypesSecret = __webpack_require__(4);
+  var warning = __webpack_require__(4);
+  var ReactPropTypesSecret = __webpack_require__(5);
   var loggedTypeFailures = {};
 }
 
@@ -2796,7 +3079,7 @@ module.exports = checkPropTypes;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2857,7 +3140,7 @@ module.exports = function() {
 
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2874,10 +3157,10 @@ module.exports = function() {
 
 var emptyFunction = __webpack_require__(1);
 var invariant = __webpack_require__(2);
-var warning = __webpack_require__(3);
+var warning = __webpack_require__(4);
 
-var ReactPropTypesSecret = __webpack_require__(4);
-var checkPropTypes = __webpack_require__(15);
+var ReactPropTypesSecret = __webpack_require__(5);
+var checkPropTypes = __webpack_require__(16);
 
 module.exports = function(isValidElement, throwOnDirectAccess) {
   /* global Symbol */
@@ -3343,7 +3626,7 @@ module.exports = function(isValidElement, throwOnDirectAccess) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -3380,7 +3663,7 @@ var stylesInDom = {},
 	singletonElement = null,
 	singletonCounter = 0,
 	styleElementsInsertedAtTop = [],
-	fixUrls = __webpack_require__(19);
+	fixUrls = __webpack_require__(20);
 
 module.exports = function(list, options) {
 	if(typeof DEBUG !== "undefined" && DEBUG) {
@@ -3639,7 +3922,7 @@ function updateLink(linkElement, options, obj) {
 
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports) {
 
 
@@ -3734,7 +4017,7 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports) {
 
 var g;
