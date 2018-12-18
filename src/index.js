@@ -125,6 +125,16 @@ class Heir extends React.Component {
   }
 }
 
+class Frond extends Heir {
+  /*
+    The radiating 'lists' of nodes around a DiversusFlower are Fronds.
+   */
+  constructor(props) {
+    super(props);
+    this.state = {}
+  }
+}
+
 const divStyle = {
   'height': '500px',
   'width': '500px'
@@ -162,9 +172,7 @@ export default class DiversusFlower extends Heir {
     }
   }
   addPetal(args) {
-    let p = (<Petal relPos={args.relPos} key={args.key} flower={this}/>);
     this.setState({petals: [...this.state.petals, args]});
-    //console.log("# petals:", this.state.petals.length);
   }
   renderFronds() {
   }

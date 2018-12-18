@@ -742,22 +742,40 @@ var Heir = function (_React$Component3) {
   return Heir;
 }(_react2.default.Component);
 
+var Frond = function (_Heir) {
+  _inherits(Frond, _Heir);
+
+  /*
+    The radiating 'lists' of nodes around a DiversusFlower are Fronds.
+   */
+  function Frond(props) {
+    _classCallCheck(this, Frond);
+
+    var _this4 = _possibleConstructorReturn(this, (Frond.__proto__ || Object.getPrototypeOf(Frond)).call(this, props));
+
+    _this4.state = {};
+    return _this4;
+  }
+
+  return Frond;
+}(Heir);
+
 var divStyle = {
   'height': '500px',
   'width': '500px'
 };
 
-var DiversusFlower = function (_Heir) {
-  _inherits(DiversusFlower, _Heir);
+var DiversusFlower = function (_Heir2) {
+  _inherits(DiversusFlower, _Heir2);
 
   function DiversusFlower(props) {
     _classCallCheck(this, DiversusFlower);
 
-    var _this4 = _possibleConstructorReturn(this, (DiversusFlower.__proto__ || Object.getPrototypeOf(DiversusFlower)).call(this, props));
+    var _this5 = _possibleConstructorReturn(this, (DiversusFlower.__proto__ || Object.getPrototypeOf(DiversusFlower)).call(this, props));
 
-    _this4.state = { centralRadius: 50 };
-    _this4.state.petals = [];
-    return _this4;
+    _this5.state = { centralRadius: 50 };
+    _this5.state.petals = [];
+    return _this5;
   }
 
   _createClass(DiversusFlower, [{
@@ -795,9 +813,7 @@ var DiversusFlower = function (_Heir) {
   }, {
     key: 'addPetal',
     value: function addPetal(args) {
-      var p = _react2.default.createElement(Petal, { relPos: args.relPos, key: args.key, flower: this });
       this.setState({ petals: [].concat(_toConsumableArray(this.state.petals), [args]) });
-      //console.log("# petals:", this.state.petals.length);
     }
   }, {
     key: 'renderFronds',
