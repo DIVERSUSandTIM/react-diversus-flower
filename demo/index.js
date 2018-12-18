@@ -13,18 +13,22 @@ class App extends React.Component {
   }
 
   addRandomPetal() {
-    let args = {relPos: Math.random()};
-    console.log("args",args);
+    let args = {relPos: Math.random(), key: Math.random()};
+    //console.log("args",args);
     this.bambino.addPetal(args);
   }
-
+  toggleRandomStream() {
+    this.bambino.toggleRandomStream();
+  }
   // https://stackoverflow.com/questions/38394015/how-to-pass-data-from-child-component-to-its-parent-in-reactjs
   render() {
     window.myBogusApp = this;
     return (
       <div>
-        <button onClick={this.addRandomPetal.bind(this)}>add random respo</button>
-        <DiversusFlower title="Pretty Flower"  whosYourDaddy={this.whoDad.bind(this)}/>
+        <button onClick={this.addRandomPetal.bind(this)}>add random</button>
+        <input type="checkbox" onChange={this.toggleRandomStream.bind(this)}/>
+        <DiversusFlower title="Pretty Flower"
+           whosYourDaddy={this.whoDad.bind(this)}/>
       </div>
     )
   }

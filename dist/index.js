@@ -558,6 +558,8 @@ __webpack_require__(8);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -587,17 +589,14 @@ var Reticle = function (_React$Component) {
           i = 0,
           twoPI = Math.PI * 2,
           inc = twoPI / rays;
-
       while (i < twoPI) {
         x = Math.cos(i) * rayLength;
         y = Math.sin(i) * rayLength;
         lines.push(_react2.default.createElement('line', { x2: x, y2: y }));
         i = i + inc;
       }
-
       lines.push(_react2.default.createElement('line', { x1: -100, y1: -100, x2: 100, y2: 100, stroke: 'red' }));
       lines.push(_react2.default.createElement('line', { x1: 100, y1: -100, x2: -100, y2: 100, stroke: 'red' }));
-
       return lines;
     }
   }, {
@@ -619,7 +618,8 @@ Reticle.propTypes = {
   rayLength: _propTypes2.default.number.isRequried,
   cx: _propTypes2.default.number.isRequired,
   cy: _propTypes2.default.number.isRequired,
-  color: _propTypes2.default.string.isRequired
+  color: _propTypes2.default.string.isRequired,
+  key: _propTypes2.default.string.isRequired
 };
 
 Reticle.defaultProps = {
@@ -653,13 +653,13 @@ var Petal = exports.Petal = function (_React$Component2) {
   _createClass(Petal, [{
     key: 'calcPetalRadius',
     value: function calcPetalRadius() {
-      var theta = Math.PI * 2 / this.flower.props.numberOfPrimaryPetals;
-      var st2 = Math.sin(theta / 2);
-      var R = this.flower.state.centralRadius;
       /*
           r = (R * sin(theta/2) /(1 - sin(theta/2))
       */
-      var r = R * st2 / (1 - st2);
+      var theta = Math.PI * 2 / this.flower.props.numberOfFronds,
+          st2 = Math.sin(theta / 2),
+          R = this.flower.state.centralRadius,
+          r = R * st2 / (1 - st2);
       return r;
     }
   }, {
@@ -679,13 +679,12 @@ var Petal = exports.Petal = function (_React$Component2) {
         petalRadius: petalRadius,
         cx: Math.cos(angle) * (centralRadius + petalRadius),
         cy: Math.sin(angle) * (centralRadius + petalRadius) };
-      //console.log(deltaState);
-      //console.log("this.state:",this.state);
       this.setState(deltaState);
     }
   }, {
     key: 'render',
     value: function render() {
+      var petalOpacity = this.flower.props.petalOpacity;
       var fill = this.props.fill;
       var _state = this.state,
           cx = _state.cx,
@@ -693,17 +692,16 @@ var Petal = exports.Petal = function (_React$Component2) {
           centralRadius = _state.centralRadius,
           petalRadius = _state.petalRadius;
 
-
-      console.log("render", this.state);
-      //         <line x1=0 y1=0 x2={cx} y2={cy} strokeWidth="3" stroke="black" />
       return _react2.default.createElement(
         'g',
         { strokeWidth: '1', stroke: 'black', x1: '0', y1: '0', fontSize: '5px' },
         _react2.default.createElement('line', { x2: cx, y2: cy, stroke: 'none' }),
-        _react2.default.createElement('circle', { cx: cx, cy: cy, r: petalRadius, stroke: 'black', fill: fill }),
+        _react2.default.createElement('circle', { cx: cx, cy: cy, r: petalRadius, stroke: 'black',
+          opacity: petalOpacity, fill: fill }),
         _react2.default.createElement(
           'text',
           { stroke: 'none', fill: 'white',
+            textAnchor: 'middle', alignmentBaseline: 'middle',
             x: cx, y: cy },
           this.props.relPos.toString().substring(0, 4)
         )
@@ -743,7 +741,7 @@ var DiversusFlower = function (_React$Component3) {
     if (props.whosYourDaddy) {
       _this3.daddy = props.whosYourDaddy(_this3);
     }
-    _this3.petals = [];
+    _this3.state.petals = [];
     return _this3;
   }
 
@@ -761,7 +759,7 @@ var DiversusFlower = function (_React$Component3) {
   }, {
     key: 'startRandomStream',
     value: function startRandomStream(interval) {
-      interval = interval || 800;
+      interval = interval || 100;
       console.log('startRandomStream');
       this.daddy.addRandomPetal(); // run one now!
       var daddy = this.daddy; // is this needed anymore?
@@ -782,8 +780,9 @@ var DiversusFlower = function (_React$Component3) {
   }, {
     key: 'addPetal',
     value: function addPetal(args) {
-      this.petals.push(_react2.default.createElement(Petal, { relPos: args.relPos, flower: this }));
-      //this.forceUpdate();
+      var p = _react2.default.createElement(Petal, { relPos: args.relPos, key: args.key, flower: this });
+      this.setState({ petals: [].concat(_toConsumableArray(this.state.petals), [args]) });
+      //console.log("# petals:", this.state.petals.length);
     }
   }, {
     key: 'renderRingOfPetals',
@@ -792,9 +791,10 @@ var DiversusFlower = function (_React$Component3) {
       // https://math.stackexchange.com/questions/1407779/arranging-circles-around-a-circle
       // http://www.packomania.com/
       var retval = [];
-      var max = this.props.numberOfPrimaryPetals;
+      var max = this.props.numberOfFronds;
       for (var i = 0; i < max; i++) {
-        retval.push(_react2.default.createElement(Petal, { relPos: i / max, fill: 'purple', flower: this }));
+        retval.push(_react2.default.createElement(Petal, { relPos: i / max, key: i,
+          fill: 'purple', flower: this }));
       }
       return retval;
     }
@@ -802,20 +802,39 @@ var DiversusFlower = function (_React$Component3) {
     key: 'renderPetals',
     value: function renderPetals() {
       var retval = [];
-      //for (let i = 0; i < this.petals.length; i++) {
-      this.petals.forEach(function (args, i) {
-        var key = args.key,
-            relPos = args.relPos;
+      for (var i = 0; i < this.state.petals.length; i++) {
+        var _state$petals$i = this.state.petals[i],
+            key = _state$petals$i.key,
+            relPos = _state$petals$i.relPos;
 
-        retval.push(_react2.default.createElement(Petal, { relPos: relPos, key: key, flower: this }));
-      });
+        retval.push(_react2.default.createElement(Petal, { relPos: relPos, key: key,
+          fill: 'yellow', flower: this }));
+      }
       return retval;
     }
+    /*
+      The use of generators for rendering petals would be clean but...
+        https://github.com/babel/babel-loader/issues/484
+      this issue is popping up and I have not tried the fix.
+     *renderGen(){
+      if (!this.state.renderedGen) {
+        this.state.renderedGen = true
+        yield (<Petal relPos={Math.random()} />);
+      }
+    }
+       This is how to invoke it in render() below....
+            {[...this.renderGen()]}
+     */
+    // https://nvbn.github.io/2017/03/14/react-generators/
+
   }, {
     key: 'componentWillMount',
     value: function componentWillMount() {
       // https://developmentarc.gitbooks.io/react-indepth/content/life_cycle/birth/premounting_with_componentwillmount.html
-      // prepare the initial state of the flower, here doing whatever calcs should preceed render() and follow constructor()
+      /*
+        Prepare the initial state of the flower, here doing whatever calcs
+        should preceed render() and follow constructor()
+      */
       console.log('componentWillMount()');
       var flowerMinDimension = 100; // TODO get this from the parent somehow?
       this.setState({
@@ -825,6 +844,8 @@ var DiversusFlower = function (_React$Component3) {
 
     // https://codeburst.io/4-four-ways-to-style-react-components-ac6f323da822
     // https://www.sarasoueidan.com/blog/svg-coordinate-systems/
+    //               {this.renderRingOfPetals()}
+    //             {this.renderPetals()}
 
   }, {
     key: 'render',
@@ -848,10 +869,11 @@ var DiversusFlower = function (_React$Component3) {
             'g',
             null,
             _react2.default.createElement(Reticle, { rayLength: this.props.reticleRayLength, rays: this.props.reticleRays }),
-            _react2.default.createElement('circle', { cx: '0', cy: '0', r: this.state.centralRadius, stroke: 'black', strokeWidth: '1', fill: 'red',
+            _react2.default.createElement('circle', { cx: '0', cy: '0', r: this.state.centralRadius,
+              stroke: 'black', strokeWidth: '1', fill: 'red',
               onClick: this.toggleRandomStream.bind(this) }),
-            this.renderRingOfPetals(),
-            this.renderPetals()
+            this.renderPetals(),
+            this.renderRingOfPetals()
           )
         )
       );
@@ -861,37 +883,25 @@ var DiversusFlower = function (_React$Component3) {
   return DiversusFlower;
 }(_react2.default.Component);
 
-/*
-            <Petal relPos=".125" fill={'yellow'} flower={this}/>
-            <Petal relPos=".25" fill={'yellow'} flower={this}/>
-            <Petal relPos=".375" fill={'yellow'} flower={this}/>
-            <Petal relPos=".50" fill={'yellow'} flower={this}/>
-            <Petal relPos=".625" fill={'yellow'} flower={this}/>
-            <Petal relPos=".75" fill={'yellow'} flower={this}/>
-            <Petal relPos=".875" fill={'yellow'} flower={this}/>
-            <Petal relPos="1.0" fill={'yellow'} flower={this}/>
-            <Petal relPos=".58" flower={this}/>
-*/
-
-// Proptypes
-
-
 exports.default = DiversusFlower;
+
+
 DiversusFlower.propTypes = {
   title: _propTypes2.default.string.isRequired,
-  numberOfPrimaryPetals: _propTypes2.default.number.isRequired,
+  numberOfFronds: _propTypes2.default.number.isRequired,
   proportionOfCenter: _propTypes2.default.number.isRequired,
   reticleRays: _propTypes2.default.number.isRequired,
-  reticleRayLength: _propTypes2.default.number.isRequired
+  reticleRayLength: _propTypes2.default.number.isRequired,
+  petalOpacity: _propTypes2.default.number
 };
 
-// Default proptypes
 DiversusFlower.defaultProps = {
   title: "Hello",
-  numberOfPrimaryPetals: 11,
+  numberOfFronds: 11,
   proportionOfCenter: .33,
   reticleRays: 80,
-  reticleRayLength: 90
+  reticleRayLength: 90,
+  petalOpacity: 0.80
 };
 
 /***/ }),
