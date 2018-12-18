@@ -592,11 +592,11 @@ var Reticle = function (_React$Component) {
       while (i < twoPI) {
         x = Math.cos(i) * rayLength;
         y = Math.sin(i) * rayLength;
-        lines.push(_react2.default.createElement('line', { x2: x, y2: y }));
+        lines.push(_react2.default.createElement('line', { x2: x, y2: y, key: 'ray' + i }));
         i = i + inc;
       }
-      lines.push(_react2.default.createElement('line', { x1: -100, y1: -100, x2: 100, y2: 100, stroke: 'red' }));
-      lines.push(_react2.default.createElement('line', { x1: 100, y1: -100, x2: -100, y2: 100, stroke: 'red' }));
+      lines.push(_react2.default.createElement('line', { x1: -100, y1: -100, x2: 100, y2: 100, stroke: 'red', key: 'tlbr' }));
+      lines.push(_react2.default.createElement('line', { x1: 100, y1: -100, x2: -100, y2: 100, stroke: 'red', key: 'trbl' }));
       return lines;
     }
   }, {
