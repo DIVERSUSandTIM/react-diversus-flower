@@ -724,25 +724,40 @@ Petal.defaultProps = {
   initialPriority: 1.0
 };
 
+var Heir = function (_React$Component3) {
+  _inherits(Heir, _React$Component3);
+
+  // <SomeHeirSubclass whosYourDaddy={this.whoDad.bind(this) />
+  function Heir(props) {
+    _classCallCheck(this, Heir);
+
+    var _this3 = _possibleConstructorReturn(this, (Heir.__proto__ || Object.getPrototypeOf(Heir)).call(this, props));
+
+    if (props.whosYourDaddy) {
+      _this3.daddy = props.whosYourDaddy(_this3);
+    }
+    return _this3;
+  }
+
+  return Heir;
+}(_react2.default.Component);
+
 var divStyle = {
   'height': '500px',
   'width': '500px'
 };
 
-var DiversusFlower = function (_React$Component3) {
-  _inherits(DiversusFlower, _React$Component3);
+var DiversusFlower = function (_Heir) {
+  _inherits(DiversusFlower, _Heir);
 
   function DiversusFlower(props) {
     _classCallCheck(this, DiversusFlower);
 
-    var _this3 = _possibleConstructorReturn(this, (DiversusFlower.__proto__ || Object.getPrototypeOf(DiversusFlower)).call(this, props));
+    var _this4 = _possibleConstructorReturn(this, (DiversusFlower.__proto__ || Object.getPrototypeOf(DiversusFlower)).call(this, props));
 
-    _this3.state = { centralRadius: 50 };
-    if (props.whosYourDaddy) {
-      _this3.daddy = props.whosYourDaddy(_this3);
-    }
-    _this3.state.petals = [];
-    return _this3;
+    _this4.state = { centralRadius: 50 };
+    _this4.state.petals = [];
+    return _this4;
   }
 
   _createClass(DiversusFlower, [{
@@ -784,6 +799,9 @@ var DiversusFlower = function (_React$Component3) {
       this.setState({ petals: [].concat(_toConsumableArray(this.state.petals), [args]) });
       //console.log("# petals:", this.state.petals.length);
     }
+  }, {
+    key: 'renderFronds',
+    value: function renderFronds() {}
   }, {
     key: 'renderRingOfPetals',
     value: function renderRingOfPetals() {
@@ -881,7 +899,7 @@ var DiversusFlower = function (_React$Component3) {
   }]);
 
   return DiversusFlower;
-}(_react2.default.Component);
+}(Heir);
 
 exports.default = DiversusFlower;
 

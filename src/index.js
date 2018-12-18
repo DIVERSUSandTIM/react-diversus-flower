@@ -115,18 +115,25 @@ Petal.defaultProps = {
   initialPriority: 1.0
 };
 
+class Heir extends React.Component {
+  // <SomeHeirSubclass whosYourDaddy={this.whoDad.bind(this) />
+  constructor(props) {
+    super(props);
+    if (props.whosYourDaddy) {
+      this.daddy = props.whosYourDaddy(this)
+    }
+  }
+}
+
 const divStyle = {
   'height': '500px',
   'width': '500px'
 }
 
-export default class DiversusFlower extends React.Component {
+export default class DiversusFlower extends Heir {
   constructor(props) {
     super(props);
     this.state = {centralRadius: 50};
-    if (props.whosYourDaddy) {
-      this.daddy = props.whosYourDaddy(this)
-    }
     this.state.petals = [];
   }
 
@@ -154,11 +161,12 @@ export default class DiversusFlower extends React.Component {
       alert('no randomStreamTimer found');
     }
   }
-
   addPetal(args) {
     let p = (<Petal relPos={args.relPos} key={args.key} flower={this}/>);
     this.setState({petals: [...this.state.petals, args]});
     //console.log("# petals:", this.state.petals.length);
+  }
+  renderFronds() {
   }
   renderRingOfPetals() {
     // https://en.wikipedia.org/wiki/Malfatti_circles
