@@ -618,8 +618,7 @@ Reticle.propTypes = {
   rayLength: _propTypes2.default.number.isRequried,
   cx: _propTypes2.default.number.isRequired,
   cy: _propTypes2.default.number.isRequired,
-  color: _propTypes2.default.string.isRequired,
-  key: _propTypes2.default.string.isRequired
+  color: _propTypes2.default.string.isRequired
 };
 
 Reticle.defaultProps = {
@@ -753,12 +752,42 @@ var Frond = function (_Heir) {
 
     var _this4 = _possibleConstructorReturn(this, (Frond.__proto__ || Object.getPrototypeOf(Frond)).call(this, props));
 
-    _this4.state = {};
+    _this4.state = {
+      petals: []
+    };
     return _this4;
   }
 
+  _createClass(Frond, [{
+    key: 'whoDad',
+    value: function whoDad(aPetal) {
+      // petals call this to know their daddy
+      // we could register Petals (aPetal) on their Frond (this) here, if needed
+      return this;
+    }
+  }, {
+    key: 'addPetal',
+    value: function addPetal(args) {
+      this.setState({ petals: [].concat(_toConsumableArray(this.state.petals), [args]) });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'g',
+        null,
+        this.renderPetals()
+      );
+    }
+  }]);
+
   return Frond;
 }(Heir);
+
+Frond.propTypes = {
+  key: _propTypes2.default.number.isRequired, // the index of the "bin"
+  relPos: _propTypes2.default.number.isRequired // the relPos of this Frond
+};
 
 var divStyle = {
   'height': '500px',
@@ -773,12 +802,22 @@ var DiversusFlower = function (_Heir2) {
 
     var _this5 = _possibleConstructorReturn(this, (DiversusFlower.__proto__ || Object.getPrototypeOf(DiversusFlower)).call(this, props));
 
-    _this5.state = { centralRadius: 50 };
-    _this5.state.petals = [];
+    _this5.state = {
+      centralRadius: 50,
+      frondsByIdx: [],
+      petals: []
+    };
     return _this5;
   }
 
   _createClass(DiversusFlower, [{
+    key: 'whoDad',
+    value: function whoDad(aFrond) {
+      // Fronds call this to know their Flower
+      // Register Frond (aFrond) on their DiversusFlower (this) here, if needed
+      return this;
+    }
+  }, {
     key: 'toggleRandomStream',
     value: function toggleRandomStream() {
       if (this.randomStreamTimer) {
@@ -811,8 +850,24 @@ var DiversusFlower = function (_Heir2) {
       }
     }
   }, {
+    key: 'relPosToIdx',
+    value: function relPosToIdx(relPos, numberOfFronds) {
+      return Math.round(relPos * numberOfFronds);
+    }
+  }, {
+    key: 'getOrCreateFrond',
+    value: function getOrCreateFrond(relPos) {
+      var idx = this.relPosToIdx(relPos, this.props.numberOfFronds);
+      console.log("FROND", idx, '/', this.props.numberOfFronds, '=', relPos);
+      var frond = this.state.frondsByIdx[idx] || _react2.default.createElement(Frond, { key: idx, relPos: relPos,
+        whosYourDaddy: this.whoDad.bind(this) });
+      return frond;
+    }
+  }, {
     key: 'addPetal',
     value: function addPetal(args) {
+      var aFrond = this.getOrCreateFrond(args.relPos);
+      //aFrond.addPetal(args);
       this.setState({ petals: [].concat(_toConsumableArray(this.state.petals), [args]) });
     }
   }, {
@@ -924,8 +979,8 @@ DiversusFlower.propTypes = {
   title: _propTypes2.default.string.isRequired,
   numberOfFronds: _propTypes2.default.number.isRequired,
   proportionOfCenter: _propTypes2.default.number.isRequired,
-  reticleRays: _propTypes2.default.number.isRequired,
-  reticleRayLength: _propTypes2.default.number.isRequired,
+  reticleRays: _propTypes2.default.number,
+  reticleRayLength: _propTypes2.default.number,
   petalOpacity: _propTypes2.default.number
 };
 

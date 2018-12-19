@@ -37,8 +37,7 @@ Reticle.propTypes = {
   rayLength: PropTypes.number.isRequried,
   cx: PropTypes.number.isRequired,
   cy: PropTypes.number.isRequired,
-  color: PropTypes.string.isRequired,
-  key: PropTypes.string.isRequired
+  color: PropTypes.string.isRequired
 }
 
 Reticle.defaultProps = {
@@ -131,9 +130,27 @@ class Frond extends Heir {
    */
   constructor(props) {
     super(props);
-    this.state = {}
+    this.state = {
+      petals: []
+    };
+  }
+  whoDad(aPetal) { // petals call this to know their daddy
+    // we could register Petals (aPetal) on their Frond (this) here, if needed
+    return this;
+  }
+  addPetal(args) {
+    this.setState({petals: [...this.state.petals, args]});
+  }
+  render() {
+    return ( <g>{this.renderPetals()}</g>);
   }
 }
+
+Frond.propTypes = {
+  key: PropTypes.number.isRequired,   // the index of the "bin"
+  relPos: PropTypes.number.isRequired // the relPos of this Frond
+};
+
 
 const divStyle = {
   'height': '500px',
@@ -143,10 +160,16 @@ const divStyle = {
 export default class DiversusFlower extends Heir {
   constructor(props) {
     super(props);
-    this.state = {centralRadius: 50};
-    this.state.petals = [];
+    this.state = {
+      centralRadius: 50,
+      frondsByIdx: [],
+      petals: []
+    };
   }
-
+  whoDad(aFrond) { // Fronds call this to know their Flower
+    // Register Frond (aFrond) on their DiversusFlower (this) here, if needed
+    return this;
+  }
   toggleRandomStream() {
     if (this.randomStreamTimer) {
       console.log("TOGGLE randomStream off")
@@ -171,7 +194,20 @@ export default class DiversusFlower extends Heir {
       alert('no randomStreamTimer found');
     }
   }
+  relPosToIdx(relPos, numberOfFronds) {
+    return Math.round(relPos * numberOfFronds);
+  }
+  getOrCreateFrond(relPos) {
+    let idx = this.relPosToIdx(relPos, this.props.numberOfFronds);
+    console.log("FROND",idx,'/',this.props.numberOfFronds,'=', relPos)
+    let frond = this.state.frondsByIdx[idx] ||
+        <Frond key={idx} relPos={relPos}
+          whosYourDaddy={this.whoDad.bind(this)}/> ;
+    return frond;
+  }
   addPetal(args) {
+    let aFrond = this.getOrCreateFrond(args.relPos);
+    //aFrond.addPetal(args);
     this.setState({petals: [...this.state.petals, args]});
   }
   renderFronds() {
@@ -256,8 +292,8 @@ DiversusFlower.propTypes = {
   title: PropTypes.string.isRequired,
   numberOfFronds: PropTypes.number.isRequired,
   proportionOfCenter: PropTypes.number.isRequired,
-  reticleRays: PropTypes.number.isRequired,
-  reticleRayLength: PropTypes.number.isRequired,
+  reticleRays: PropTypes.number,
+  reticleRayLength: PropTypes.number,
   petalOpacity: PropTypes.number
 };
 
