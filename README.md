@@ -19,3 +19,14 @@ You should be able to add this to your package.json by adding a line to `depende
 - `npm run deploy` - To deploy the demo folder to gh-pages.
 
 - `npm run test`   - To run test cases.
+
+
+### DiversusFlower props
+
+* `numberOfFronds`
+* `proportionOfCenter`
+* `reticleRays`
+* `reticleRayLength`
+* `demoMode` currently defaulting to `true`, will later default to `false`
+* `maxRandomPetalCount`
+* [all the props}(https://github.com/DIVERSUSandTIM/react-diversus-flower/blob/master/src/index.js#L307)
