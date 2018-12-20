@@ -91,26 +91,14 @@ export class Petal extends React.Component {
     //   cx: 0.0  // the x coordinate of the center of this petal
     //   cy: 0.0  // the y coordinate of the center of this petal
   }
-  calcPetalRadius() {
-    /*
-        r = (R * sin(theta/2) /(1 - sin(theta/2))
-    */
-    return calcRadiusOfPackedCircles(this.props.flower.state.centralRadius,
-                                     this.props.flower.props.numberOfFronds);
-  }
   componentWillMount() {
     // https://developmentarc.gitbooks.io/react-indepth/content/life_cycle/birth/premounting_with_componentwillmount.html
-    //console.log("<Petal> props:",this.props);
     let flower = this.props.flower;
     let orderIdx = this.props.orderIdx;
     let centralRadius = flower.state.centralRadius;  // the radius of the central circle
     let angle = getAngle(this.props.relPos);
     let petalRadius = flower.state.radii[orderIdx];
-    //console.log('radii',flower.state.radii);
-    //console.log('dists',flower.state.dists);
     let distFromFlowerCenter = flower.state.dists[orderIdx];
-    //, petalRadius =    this.calcPetalRadius()
-    //console.log('componentWillMount()',orderIdx, centralRadius, angle, petalRadius,distFromFlowerCenter);
     let deltaState = {
           petalRadius: petalRadius
           , cx: (Math.cos(angle) * (distFromFlowerCenter))
@@ -124,6 +112,9 @@ export class Petal extends React.Component {
     const {cx, cy, centralRadius} = this.state;
     const petalRadius = flower.state.radii[orderIdx];
     //console.log("Petal.render()", cx, cy, centralRadius, petalRadius);
+    let label = this.props.relPos.toString().substring(0,4);
+    label = "d:" + Math.round(flower.state.dists[orderIdx]) + ";r:"+Math.round(petalRadius);
+    label = "";
     return (
       <g strokeWidth="1" stroke="black" x1="0" y1="0" fontSize="5px">
         <line x2={cx} y2={cy} stroke="none"/>
@@ -131,7 +122,7 @@ export class Petal extends React.Component {
            opacity={petalOpacity} fill={fill}/>
         <text stroke="none" fill="white"
            textAnchor="middle" alignmentBaseline="middle"
-           x={cx} y={cy}>{this.props.relPos.toString().substring(0,4)}</text>
+           x={cx} y={cy}>{label}</text>
       </g>
     )
   }
@@ -160,7 +151,6 @@ class Heir extends React.Component {
     }
   }
 }
-
 
 const divStyle = {
   'height': '500px',
@@ -207,7 +197,12 @@ export class DiversusFlower extends Heir {
   addRandomPetal() {
     this.randomPetalCount = this.randomPetalCount || 0;
     this.randomPetalCount++;
-    let args = {relPos: Math.random(), key: Math.random(), sortKey: Math.random(), fillColor: getRandomColor()};
+    let args = {
+      relPos: Math.random(),
+      key: Math.random(),
+      sortKey: Math.random(),
+      fillColor: getRandomColor()
+    };
     //console.log("args",args);
     this.addPetal(args);
     if (this.randomPetalCount > this.props.maxRandomPetalCount) {
@@ -235,7 +230,6 @@ export class DiversusFlower extends Heir {
     aFrond.petals.push(args);
     this.state.fronds[idx] = aFrond;
     this.setState({fronds: this.state.fronds});
-    //console.log(JSON.stringify(this.state).length, JSON.stringify(aFrond))
   }
   renderFronds() {
     let retval = [];
@@ -249,7 +243,6 @@ export class DiversusFlower extends Heir {
         //console.log("<Petal>", key, relPos);
         if (typeof key == 'undefined') throw new Error('no key');
         retval.push((<Petal relPos={aFrond.relPos} key={key}
-                     XXXinitialRadius={this.state.radii[petalIdx+1]}
                      orderIdx={petalIdx+1}
                      fill={fillColor} flower={this}/>));
       }
@@ -268,56 +261,30 @@ export class DiversusFlower extends Heir {
     }
     return retval;
   }
-  XXXrenderPetals() {
-    let retval = [];
-    for (let i = 0; i < this.state.petals.length; i++) {
-      let {key, relPos} = this.state.petals[i];
-      retval.push((<Petal relPos={relPos} key={key}
-                       fill="yellow" flower={this}/>));
-    }
-    return retval;
-  }
-
-  /*
-    The use of generators for rendering petals would be clean but...
-      https://github.com/babel/babel-loader/issues/484
-    this issue is popping up and I have not tried the fix.
-
-  *renderGen(){
-    if (!this.state.renderedGen) {
-      this.state.renderedGen = true
-      yield (<Petal relPos={Math.random()} />);
-    }
-  }
-
-    This is how to invoke it in render() below....
-          {[...this.renderGen()]}
-   */
   // https://nvbn.github.io/2017/03/14/react-generators/
   calcFrondRadius(centralRadius) {  // receiving centralRadius as param is an ugly hack
     return calcRadiusOfPackedCircles(centralRadius || this.state.centralRadius,
                                      this.props.numberOfFronds);
   }
-  calcRadii() {
+  calcRadii(centralRadius) {
     let maxFrondLength = 50;
-    let radii = [];
+    let radii = [centralRadius];
     let packNum = this.props.numberOfFronds;
-    radii.push(this.state.centralRadius);
     for (let i = 1; i < maxFrondLength; i++) {
       radii[i] = calcRadiusOfPackedCircles(radii[i-1], packNum);
-      packNum = 9;
+      packNum = this.props.packingOfPetals;
     }
-    console.log('calcRadii()', radii);
     return radii;
   }
   calcDists(radii) {
+    // idx=0 represents the rootPetal which is 0 from the center of the Reticle
     let dists = [],
-        accum = 0;
-    radii.forEach((currVal, idx) => {
-      accum = accum + currVal;
-      dists[idx+1] = accum;
-    })
-    console.log("calcDists()", dists);
+        dist = 0,
+        radius = 0;
+    for (let idx = 0; idx < radii.length ; idx++) {
+      dists[idx] = dist;
+      dist = dists[idx] + radii[idx] + radii[idx+1];
+    }
     return dists;
   }
   componentWillMount() {
@@ -326,11 +293,11 @@ export class DiversusFlower extends Heir {
       Prepare the initial state of the flower, here doing whatever calcs
       should preceed render() and follow constructor()
     */
-    let centralRadius = this.props.proportionOfCenter  * this.props.flowerMinDimension;
-    let radii = this.calcRadii();
-    let dists = this.calcDists(radii);
+    let centralRadius = this.props.proportionOfCenter * this.props.flowerMinDimension;
     console.log("setting centralRadius", centralRadius);
     this.setState({centralRadius: centralRadius});
+    let radii = this.calcRadii(centralRadius);
+    let dists = this.calcDists(radii);
     this.setState({radii: radii});
     this.setState({dists: dists});
     this.setState({frondRadius: this.calcFrondRadius(centralRadius)}); // HACK sending centralRadius
@@ -371,6 +338,7 @@ export class DiversusFlower extends Heir {
 DiversusFlower.propTypes = {
   title: PropTypes.string.isRequired,
   numberOfFronds: PropTypes.number.isRequired,
+  packingOfPetals: PropTypes.number,
   proportionOfCenter: PropTypes.number.isRequired,
   reticleRays: PropTypes.number,
   reticleRayLength: PropTypes.number,
@@ -381,11 +349,25 @@ DiversusFlower.propTypes = {
 DiversusFlower.defaultProps = {
   title: "Hello",
   numberOfFronds: 11,
-  proportionOfCenter: .33,
+  packingOfPetals: 8,
+  proportionOfCenter: .30, // times the flowerMinDimension this controls the radius of the root
   reticleRays: 80,
   reticleRayLength: 90,
   petalOpacity: 0.80,
   maxRandomPetalCount: 50,
-  flowerMinDimension: 100,
+  flowerMinDimension: 100, // distance from center to closest top or side of SVG in pixels
   demoMode: true
 };
+
+/*
+From Martin:
+* BG Colour/Opacity of Flower-Canvas
+* Colour/Opacity of circular grid strokes (I call the circular grid “gauge”)
+* Border-width (stroke)
+* Start-Size of the root 0-1
+    * Non-active Size of the root (when another Petal has been activated)
+* Size of the active Petal (the one chosen and clicked/activated by the user)
+* Size of the directly adjacent neighbour Petals to the active Petal (a question of clickability)
+* Duration of construction-animation (when the flower gets construction in the beginning. eg. when the user double-clicked a Petal in order to make it a new root, then flower has to get assembled newly)
+* In case there are springs (animations), tensions or fractions (in case you use physics) in the magnifier-animation it would be cool to have their properties available
+*/

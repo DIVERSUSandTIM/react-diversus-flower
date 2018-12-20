@@ -22,12 +22,23 @@ describe('DiversusFlower Component', () => {
 
   it('should render correctly', () => {
     // Render the DiversusFlower component
+    var grab = {};
+    function dadFunc(kiddo) {
+      grab.kid = kiddo;
+      return {};
+    }
     const component = TestUtils.renderIntoDocument(
-        <DiversusFlower title="Pretty Flower" demoMode={false}/>
+        <DiversusFlower title="Pretty Flower" demoMode={false} whosYourDaddy={dadFunc}/>
     );
 
     const titleNode = ReactDOM.findDOMNode(component);
-    expect(titleNode.textContent).toEqual('Pretty Flower');
+    expect(grab.kid.props.demoMode).toEqual(false);
+    expect(grab.kid.state.dists[0]).toEqual(0); // distance from center to itself is 0
+    expect(grab.kid.state.dists[1]).toEqual(grab.kid.state.radii[0] +
+                                            grab.kid.state.radii[1]);
+    expect(grab.kid.state.dists[2]).toEqual(grab.kid.state.radii[0] +
+                                            grab.kid.state.radii[1]*2 +
+                                            grab.kid.state.radii[2]);
   });
 
 });
