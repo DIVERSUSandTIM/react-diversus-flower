@@ -17,7 +17,14 @@ function getBinMid(idx, numberOfFronds) {
 function getAngle(relPos) {
   return (2 * Math.PI) * relPos - Math.PI/2;
 }
-
+function getRandomColor() {
+  var letters = '0123456789ABCDEF';
+  var color = '#';
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
 class Reticle extends React.Component {
   renderLines() {
     var x,y,
@@ -181,7 +188,7 @@ export class DiversusFlower extends Heir {
   addRandomPetal() {
     this.randomPetalCount = this.randomPetalCount || 0;
     this.randomPetalCount++;
-    let args = {relPos: Math.random(), key: Math.random()};
+    let args = {relPos: Math.random(), key: Math.random(), sortKey: Math.random(), fillColor: getRandomColor()};
     //console.log("args",args);
     this.addPetal(args);
     if (this.randomPetalCount > this.props.maxRandomPetalCount) {
@@ -200,25 +207,21 @@ export class DiversusFlower extends Heir {
     aFrond.petals.push(args);
     this.state.fronds[idx] = aFrond;
     this.setState({fronds: this.state.fronds});
-    console.log(JSON.stringify(this.state).length, JSON.stringify(aFrond))
+    //console.log(JSON.stringify(this.state).length, JSON.stringify(aFrond))
   }
   renderFronds() {
     let retval = [];
-    //console.log('DiversusFlower.render()');
     for (let frondIdx = 0; frondIdx < this.state.fronds.length; frondIdx++) {
       let aFrond = this.state.fronds[frondIdx];
-
       if (!aFrond) {
         continue;
       }
-      console.log("render()",aFrond)
-
       for (let petalIdx = 0; petalIdx < aFrond.petals.length; petalIdx++) {
-        let {key, relPos} = aFrond.petals[petalIdx];
+        let {key, relPos, fillColor} = aFrond.petals[petalIdx];
         //console.log("<Petal>", key, relPos);
         if (typeof key == 'undefined') throw new Error('no key');
         retval.push((<Petal relPos={aFrond.relPos} key={key}
-                       fill="green" flower={this}/>));
+                     fill={fillColor} flower={this}/>));
       }
     }
     return retval;
@@ -235,8 +238,7 @@ export class DiversusFlower extends Heir {
     }
     return retval;
   }
-
-  renderPetals() {
+  XXXrenderPetals() {
     let retval = [];
     for (let i = 0; i < this.state.petals.length; i++) {
       let {key, relPos} = this.state.petals[i];

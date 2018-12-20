@@ -581,6 +581,14 @@ function getBinMid(idx, numberOfFronds) {
 function getAngle(relPos) {
   return 2 * Math.PI * relPos - Math.PI / 2;
 }
+function getRandomColor() {
+  var letters = '0123456789ABCDEF';
+  var color = '#';
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
 
 var Reticle = function (_React$Component) {
   _inherits(Reticle, _React$Component);
@@ -814,7 +822,7 @@ var DiversusFlower = exports.DiversusFlower = function (_Heir) {
     value: function addRandomPetal() {
       this.randomPetalCount = this.randomPetalCount || 0;
       this.randomPetalCount++;
-      var args = { relPos: Math.random(), key: Math.random() };
+      var args = { relPos: Math.random(), key: Math.random(), sortKey: Math.random(), fillColor: getRandomColor() };
       //console.log("args",args);
       this.addPetal(args);
       if (this.randomPetalCount > this.props.maxRandomPetalCount) {
@@ -837,30 +845,27 @@ var DiversusFlower = exports.DiversusFlower = function (_Heir) {
       aFrond.petals.push(args);
       this.state.fronds[idx] = aFrond;
       this.setState({ fronds: this.state.fronds });
-      console.log(JSON.stringify(this.state).length, JSON.stringify(aFrond));
+      //console.log(JSON.stringify(this.state).length, JSON.stringify(aFrond))
     }
   }, {
     key: 'renderFronds',
     value: function renderFronds() {
       var retval = [];
-      //console.log('DiversusFlower.render()');
       for (var frondIdx = 0; frondIdx < this.state.fronds.length; frondIdx++) {
         var aFrond = this.state.fronds[frondIdx];
-
         if (!aFrond) {
           continue;
         }
-        console.log("render()", aFrond);
-
         for (var petalIdx = 0; petalIdx < aFrond.petals.length; petalIdx++) {
           var _aFrond$petals$petalI = aFrond.petals[petalIdx],
               key = _aFrond$petals$petalI.key,
-              relPos = _aFrond$petals$petalI.relPos;
+              relPos = _aFrond$petals$petalI.relPos,
+              fillColor = _aFrond$petals$petalI.fillColor;
           //console.log("<Petal>", key, relPos);
 
           if (typeof key == 'undefined') throw new Error('no key');
           retval.push(_react2.default.createElement(Petal, { relPos: aFrond.relPos, key: key,
-            fill: 'green', flower: this }));
+            fill: fillColor, flower: this }));
         }
       }
       return retval;
@@ -880,8 +885,8 @@ var DiversusFlower = exports.DiversusFlower = function (_Heir) {
       return retval;
     }
   }, {
-    key: 'renderPetals',
-    value: function renderPetals() {
+    key: 'XXXrenderPetals',
+    value: function XXXrenderPetals() {
       var retval = [];
       for (var i = 0; i < this.state.petals.length; i++) {
         var _state$petals$i = this.state.petals[i],
