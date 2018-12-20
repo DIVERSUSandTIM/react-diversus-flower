@@ -4,6 +4,20 @@ import './styles.css';
 //import Ball from './Ball';
 //import Petal from './Petal';
 
+export function petalRelPosToFrondLoc(relPos, numberOfFronds) {
+  let idx = getBinIdx(relPos, numberOfFronds);
+  return [idx, getBinMid(idx, numberOfFronds)];
+}
+function getBinIdx(relPos, numberOfFronds) {
+  return ( numberOfFronds * (Math.floor((relPos * numberOfFronds))/numberOfFronds));
+}
+function getBinMid(idx, numberOfFronds) {
+  return ((1 + idx)/numberOfFronds) - (1/(2*numberOfFronds));
+}
+function getAngle(relPos) {
+  return (2 * Math.PI) * relPos - Math.PI/2;
+}
+
 class Reticle extends React.Component {
   renderLines() {
     var x,y,
@@ -33,8 +47,8 @@ class Reticle extends React.Component {
 }
 
 Reticle.propTypes = {
-  rays: PropTypes.number.isRequried,
-  rayLength: PropTypes.number.isRequried,
+  rays: PropTypes.number.isRequired,
+  rayLength: PropTypes.number.isRequired,
   cx: PropTypes.number.isRequired,
   cy: PropTypes.number.isRequired,
   color: PropTypes.string.isRequired
@@ -71,13 +85,10 @@ export class Petal extends React.Component {
         r = ((R * st2) / (1 - st2));
     return r;
   }
-  getAngle(relPos) {
-    return (2 * Math.PI) * relPos - Math.PI/2;
-  }
   componentWillMount() {
     // https://developmentarc.gitbooks.io/react-indepth/content/life_cycle/birth/premounting_with_componentwillmount.html
     let centralRadius = this.flower.state.centralRadius  // the radius of the central circle
-        , angle = this.getAngle(this.props.relPos)
+        , angle = getAngle(this.props.relPos)
         , petalRadius = this.calcPetalRadius()
         , deltaState = {
           petalRadius: petalRadius
@@ -124,45 +135,18 @@ class Heir extends React.Component {
   }
 }
 
-class Frond extends Heir {
-  /*
-    The radiating 'lists' of nodes around a DiversusFlower are Fronds.
-   */
-  constructor(props) {
-    super(props);
-    this.state = {
-      petals: []
-    };
-  }
-  whoDad(aPetal) { // petals call this to know their daddy
-    // we could register Petals (aPetal) on their Frond (this) here, if needed
-    return this;
-  }
-  addPetal(args) {
-    this.setState({petals: [...this.state.petals, args]});
-  }
-  render() {
-    return ( <g>{this.renderPetals()}</g>);
-  }
-}
-
-Frond.propTypes = {
-  key: PropTypes.number.isRequired,   // the index of the "bin"
-  relPos: PropTypes.number.isRequired // the relPos of this Frond
-};
-
 
 const divStyle = {
   'height': '500px',
   'width': '500px'
 }
 
-export default class DiversusFlower extends Heir {
+export class DiversusFlower extends Heir {
   constructor(props) {
     super(props);
     this.state = {
       centralRadius: 50,
-      frondsByIdx: [],
+      fronds: [],
       petals: []
     };
   }
@@ -182,35 +166,62 @@ export default class DiversusFlower extends Heir {
   startRandomStream(interval) {
     interval = interval || 100;
     console.log('startRandomStream');
-    this.daddy.addRandomPetal(); // run one now!
-    let daddy = this.daddy; // is this needed anymore?
-    this.randomStreamTimer = setInterval( function(){daddy.addRandomPetal()}, interval)
+    let dis = this;
+    this.randomStreamTimer = setInterval( function(){dis.addRandomPetal()}, interval)
+    this.addRandomPetal(); // run one now!
   }
   stopRandomStream(){
     if (this.randomStreamTimer) {
       clearInterval(this.randomStreamTimer);
       delete this.randomStreamTimer;
     } else {
-      alert('no randomStreamTimer found');
+      console.log('no randomStreamTimer found');
     }
   }
-  relPosToIdx(relPos, numberOfFronds) {
-    return Math.round(relPos * numberOfFronds);
+  addRandomPetal() {
+    this.randomPetalCount = this.randomPetalCount || 0;
+    this.randomPetalCount++;
+    let args = {relPos: Math.random(), key: Math.random()};
+    //console.log("args",args);
+    this.addPetal(args);
+    if (this.randomPetalCount > this.props.maxRandomPetalCount) {
+      this.stopRandomStream();
+    }
   }
   getOrCreateFrond(relPos) {
-    let idx = this.relPosToIdx(relPos, this.props.numberOfFronds);
-    console.log("FROND",idx,'/',this.props.numberOfFronds,'=', relPos)
-    let frond = this.state.frondsByIdx[idx] ||
-        <Frond key={idx} relPos={relPos}
-          whosYourDaddy={this.whoDad.bind(this)}/> ;
-    return frond;
+    let idx = getBinIdx(relPos, this.props.numberOfFronds);
+    let frondRelPos = getBinMid(idx, this.props.numberOfFronds);
+    return this.state.fronds[idx] || {key: idx, relPos: frondRelPos, petals: []};
   }
   addPetal(args) {
-    let aFrond = this.getOrCreateFrond(args.relPos);
-    //aFrond.addPetal(args);
-    this.setState({petals: [...this.state.petals, args]});
+    let idx = getBinIdx(args.relPos, this.props.numberOfFronds);
+    let frondRelPos = getBinMid(idx, this.props.numberOfFronds);
+    let aFrond = this.state.fronds[idx] || {key: idx, relPos: frondRelPos, petals: []};
+    aFrond.petals.push(args);
+    this.state.fronds[idx] = aFrond;
+    this.setState({fronds: this.state.fronds});
+    console.log(JSON.stringify(this.state).length, JSON.stringify(aFrond))
   }
   renderFronds() {
+    let retval = [];
+    //console.log('DiversusFlower.render()');
+    for (let frondIdx = 0; frondIdx < this.state.fronds.length; frondIdx++) {
+      let aFrond = this.state.fronds[frondIdx];
+
+      if (!aFrond) {
+        continue;
+      }
+      console.log("render()",aFrond)
+
+      for (let petalIdx = 0; petalIdx < aFrond.petals.length; petalIdx++) {
+        let {key, relPos} = aFrond.petals[petalIdx];
+        //console.log("<Petal>", key, relPos);
+        if (typeof key == 'undefined') throw new Error('no key');
+        retval.push((<Petal relPos={aFrond.relPos} key={key}
+                       fill="green" flower={this}/>));
+      }
+    }
+    return retval;
   }
   renderRingOfPetals() {
     // https://en.wikipedia.org/wiki/Malfatti_circles
@@ -224,6 +235,7 @@ export default class DiversusFlower extends Heir {
     }
     return retval;
   }
+
   renderPetals() {
     let retval = [];
     for (let i = 0; i < this.state.petals.length; i++) {
@@ -233,6 +245,7 @@ export default class DiversusFlower extends Heir {
     }
     return retval;
   }
+
   /*
     The use of generators for rendering petals would be clean but...
       https://github.com/babel/babel-loader/issues/484
@@ -255,11 +268,15 @@ export default class DiversusFlower extends Heir {
       Prepare the initial state of the flower, here doing whatever calcs
       should preceed render() and follow constructor()
     */
-    console.log('componentWillMount()');
     let flowerMinDimension = 100; // TODO get this from the parent somehow?
     this.setState({
       centralRadius: this.props.proportionOfCenter  * flowerMinDimension
     });
+  }
+  componentDidMount() {
+    if (this.props.demoMode) {
+      this.startRandomStream()
+    }
   }
 
   // https://codeburst.io/4-four-ways-to-style-react-components-ac6f323da822
@@ -279,8 +296,7 @@ export default class DiversusFlower extends Heir {
             <circle cx="0" cy="0" r={this.state.centralRadius}
                stroke="black" strokeWidth="1" fill="red"
                onClick={this.toggleRandomStream.bind(this)}/>
-            {this.renderPetals()}
-            {this.renderRingOfPetals()}
+            {this.renderFronds()}
           </g>
         </svg>
       </div>
@@ -294,7 +310,8 @@ DiversusFlower.propTypes = {
   proportionOfCenter: PropTypes.number.isRequired,
   reticleRays: PropTypes.number,
   reticleRayLength: PropTypes.number,
-  petalOpacity: PropTypes.number
+  petalOpacity: PropTypes.number,
+  demoMode: PropTypes.bool
 };
 
 DiversusFlower.defaultProps = {
@@ -303,5 +320,7 @@ DiversusFlower.defaultProps = {
   proportionOfCenter: .33,
   reticleRays: 80,
   reticleRayLength: 90,
-  petalOpacity: 0.80
+  petalOpacity: 0.80,
+  maxRandomPetalCount: 50,
+  demoMode: true
 };

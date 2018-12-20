@@ -7,7 +7,7 @@
 		exports["DiversusFlower"] = factory(require("react"));
 	else
 		root["DiversusFlower"] = factory(root["react"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_3__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_7__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 9);
+/******/ 	return __webpack_require__(__webpack_require__.s = 8);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -370,12 +370,6 @@ module.exports = invariant;
 
 /***/ }),
 /* 3 */
-/***/ (function(module, exports) {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE_3__;
-
-/***/ }),
-/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -448,7 +442,7 @@ module.exports = warning;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 5 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -469,8 +463,7 @@ module.exports = ReactPropTypesSecret;
 
 
 /***/ }),
-/* 6 */,
-/* 7 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(process) {/**
@@ -497,26 +490,26 @@ if (process.env.NODE_ENV !== 'production') {
   // By explicitly using `prop-types` you are opting into new development behavior.
   // http://fb.me/prop-types-in-prod
   var throwOnDirectAccess = true;
-  module.exports = __webpack_require__(18)(isValidElement, throwOnDirectAccess);
+  module.exports = __webpack_require__(17)(isValidElement, throwOnDirectAccess);
 } else {
   // By explicitly using `prop-types` you are opting into new production behavior.
   // http://fb.me/prop-types-in-prod
-  module.exports = __webpack_require__(17)();
+  module.exports = __webpack_require__(16)();
 }
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 8 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(12);
+var content = __webpack_require__(11);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // add the styles to the DOM
-var update = __webpack_require__(19)(content, {});
+var update = __webpack_require__(18)(content, {});
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -533,7 +526,13 @@ if(false) {
 }
 
 /***/ }),
-/* 9 */
+/* 7 */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE_7__;
+
+/***/ }),
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -542,23 +541,23 @@ if(false) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Petal = undefined;
+exports.DiversusFlower = exports.Petal = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _react = __webpack_require__(3);
+exports.petalRelPosToFrondLoc = petalRelPosToFrondLoc;
+
+var _react = __webpack_require__(7);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _propTypes = __webpack_require__(7);
+var _propTypes = __webpack_require__(5);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-__webpack_require__(8);
+__webpack_require__(6);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -568,6 +567,20 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 //import Ball from './Ball';
 //import Petal from './Petal';
+
+function petalRelPosToFrondLoc(relPos, numberOfFronds) {
+  var idx = getBinIdx(relPos, numberOfFronds);
+  return [idx, getBinMid(idx, numberOfFronds)];
+}
+function getBinIdx(relPos, numberOfFronds) {
+  return numberOfFronds * (Math.floor(relPos * numberOfFronds) / numberOfFronds);
+}
+function getBinMid(idx, numberOfFronds) {
+  return (1 + idx) / numberOfFronds - 1 / (2 * numberOfFronds);
+}
+function getAngle(relPos) {
+  return 2 * Math.PI * relPos - Math.PI / 2;
+}
 
 var Reticle = function (_React$Component) {
   _inherits(Reticle, _React$Component);
@@ -614,8 +627,8 @@ var Reticle = function (_React$Component) {
 }(_react2.default.Component);
 
 Reticle.propTypes = {
-  rays: _propTypes2.default.number.isRequried,
-  rayLength: _propTypes2.default.number.isRequried,
+  rays: _propTypes2.default.number.isRequired,
+  rayLength: _propTypes2.default.number.isRequired,
   cx: _propTypes2.default.number.isRequired,
   cy: _propTypes2.default.number.isRequired,
   color: _propTypes2.default.string.isRequired
@@ -662,17 +675,12 @@ var Petal = exports.Petal = function (_React$Component2) {
       return r;
     }
   }, {
-    key: 'getAngle',
-    value: function getAngle(relPos) {
-      return 2 * Math.PI * relPos - Math.PI / 2;
-    }
-  }, {
     key: 'componentWillMount',
     value: function componentWillMount() {
       // https://developmentarc.gitbooks.io/react-indepth/content/life_cycle/birth/premounting_with_componentwillmount.html
       var centralRadius = this.flower.state.centralRadius // the radius of the central circle
       ,
-          angle = this.getAngle(this.props.relPos),
+          angle = getAngle(this.props.relPos),
           petalRadius = this.calcPetalRadius(),
           deltaState = {
         petalRadius: petalRadius,
@@ -741,73 +749,25 @@ var Heir = function (_React$Component3) {
   return Heir;
 }(_react2.default.Component);
 
-var Frond = function (_Heir) {
-  _inherits(Frond, _Heir);
-
-  /*
-    The radiating 'lists' of nodes around a DiversusFlower are Fronds.
-   */
-  function Frond(props) {
-    _classCallCheck(this, Frond);
-
-    var _this4 = _possibleConstructorReturn(this, (Frond.__proto__ || Object.getPrototypeOf(Frond)).call(this, props));
-
-    _this4.state = {
-      petals: []
-    };
-    return _this4;
-  }
-
-  _createClass(Frond, [{
-    key: 'whoDad',
-    value: function whoDad(aPetal) {
-      // petals call this to know their daddy
-      // we could register Petals (aPetal) on their Frond (this) here, if needed
-      return this;
-    }
-  }, {
-    key: 'addPetal',
-    value: function addPetal(args) {
-      this.setState({ petals: [].concat(_toConsumableArray(this.state.petals), [args]) });
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      return _react2.default.createElement(
-        'g',
-        null,
-        this.renderPetals()
-      );
-    }
-  }]);
-
-  return Frond;
-}(Heir);
-
-Frond.propTypes = {
-  key: _propTypes2.default.number.isRequired, // the index of the "bin"
-  relPos: _propTypes2.default.number.isRequired // the relPos of this Frond
-};
-
 var divStyle = {
   'height': '500px',
   'width': '500px'
 };
 
-var DiversusFlower = function (_Heir2) {
-  _inherits(DiversusFlower, _Heir2);
+var DiversusFlower = exports.DiversusFlower = function (_Heir) {
+  _inherits(DiversusFlower, _Heir);
 
   function DiversusFlower(props) {
     _classCallCheck(this, DiversusFlower);
 
-    var _this5 = _possibleConstructorReturn(this, (DiversusFlower.__proto__ || Object.getPrototypeOf(DiversusFlower)).call(this, props));
+    var _this4 = _possibleConstructorReturn(this, (DiversusFlower.__proto__ || Object.getPrototypeOf(DiversusFlower)).call(this, props));
 
-    _this5.state = {
+    _this4.state = {
       centralRadius: 50,
-      frondsByIdx: [],
+      fronds: [],
       petals: []
     };
-    return _this5;
+    return _this4;
   }
 
   _createClass(DiversusFlower, [{
@@ -833,11 +793,11 @@ var DiversusFlower = function (_Heir2) {
     value: function startRandomStream(interval) {
       interval = interval || 100;
       console.log('startRandomStream');
-      this.daddy.addRandomPetal(); // run one now!
-      var daddy = this.daddy; // is this needed anymore?
+      var dis = this;
       this.randomStreamTimer = setInterval(function () {
-        daddy.addRandomPetal();
+        dis.addRandomPetal();
       }, interval);
+      this.addRandomPetal(); // run one now!
     }
   }, {
     key: 'stopRandomStream',
@@ -846,33 +806,65 @@ var DiversusFlower = function (_Heir2) {
         clearInterval(this.randomStreamTimer);
         delete this.randomStreamTimer;
       } else {
-        alert('no randomStreamTimer found');
+        console.log('no randomStreamTimer found');
       }
     }
   }, {
-    key: 'relPosToIdx',
-    value: function relPosToIdx(relPos, numberOfFronds) {
-      return Math.round(relPos * numberOfFronds);
+    key: 'addRandomPetal',
+    value: function addRandomPetal() {
+      this.randomPetalCount = this.randomPetalCount || 0;
+      this.randomPetalCount++;
+      var args = { relPos: Math.random(), key: Math.random() };
+      //console.log("args",args);
+      this.addPetal(args);
+      if (this.randomPetalCount > this.props.maxRandomPetalCount) {
+        this.stopRandomStream();
+      }
     }
   }, {
     key: 'getOrCreateFrond',
     value: function getOrCreateFrond(relPos) {
-      var idx = this.relPosToIdx(relPos, this.props.numberOfFronds);
-      console.log("FROND", idx, '/', this.props.numberOfFronds, '=', relPos);
-      var frond = this.state.frondsByIdx[idx] || _react2.default.createElement(Frond, { key: idx, relPos: relPos,
-        whosYourDaddy: this.whoDad.bind(this) });
-      return frond;
+      var idx = getBinIdx(relPos, this.props.numberOfFronds);
+      var frondRelPos = getBinMid(idx, this.props.numberOfFronds);
+      return this.state.fronds[idx] || { key: idx, relPos: frondRelPos, petals: [] };
     }
   }, {
     key: 'addPetal',
     value: function addPetal(args) {
-      var aFrond = this.getOrCreateFrond(args.relPos);
-      //aFrond.addPetal(args);
-      this.setState({ petals: [].concat(_toConsumableArray(this.state.petals), [args]) });
+      var idx = getBinIdx(args.relPos, this.props.numberOfFronds);
+      var frondRelPos = getBinMid(idx, this.props.numberOfFronds);
+      var aFrond = this.state.fronds[idx] || { key: idx, relPos: frondRelPos, petals: [] };
+      aFrond.petals.push(args);
+      this.state.fronds[idx] = aFrond;
+      this.setState({ fronds: this.state.fronds });
+      console.log(JSON.stringify(this.state).length, JSON.stringify(aFrond));
     }
   }, {
     key: 'renderFronds',
-    value: function renderFronds() {}
+    value: function renderFronds() {
+      var retval = [];
+      //console.log('DiversusFlower.render()');
+      for (var frondIdx = 0; frondIdx < this.state.fronds.length; frondIdx++) {
+        var aFrond = this.state.fronds[frondIdx];
+
+        if (!aFrond) {
+          continue;
+        }
+        console.log("render()", aFrond);
+
+        for (var petalIdx = 0; petalIdx < aFrond.petals.length; petalIdx++) {
+          var _aFrond$petals$petalI = aFrond.petals[petalIdx],
+              key = _aFrond$petals$petalI.key,
+              relPos = _aFrond$petals$petalI.relPos;
+          //console.log("<Petal>", key, relPos);
+
+          if (typeof key == 'undefined') throw new Error('no key');
+          retval.push(_react2.default.createElement(Petal, { relPos: aFrond.relPos, key: key,
+            fill: 'green', flower: this }));
+        }
+      }
+      return retval;
+    }
   }, {
     key: 'renderRingOfPetals',
     value: function renderRingOfPetals() {
@@ -901,6 +893,7 @@ var DiversusFlower = function (_Heir2) {
       }
       return retval;
     }
+
     /*
       The use of generators for rendering petals would be clean but...
         https://github.com/babel/babel-loader/issues/484
@@ -924,11 +917,17 @@ var DiversusFlower = function (_Heir2) {
         Prepare the initial state of the flower, here doing whatever calcs
         should preceed render() and follow constructor()
       */
-      console.log('componentWillMount()');
       var flowerMinDimension = 100; // TODO get this from the parent somehow?
       this.setState({
         centralRadius: this.props.proportionOfCenter * flowerMinDimension
       });
+    }
+  }, {
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      if (this.props.demoMode) {
+        this.startRandomStream();
+      }
     }
 
     // https://codeburst.io/4-four-ways-to-style-react-components-ac6f323da822
@@ -961,8 +960,7 @@ var DiversusFlower = function (_Heir2) {
             _react2.default.createElement('circle', { cx: '0', cy: '0', r: this.state.centralRadius,
               stroke: 'black', strokeWidth: '1', fill: 'red',
               onClick: this.toggleRandomStream.bind(this) }),
-            this.renderPetals(),
-            this.renderRingOfPetals()
+            this.renderFronds()
           )
         )
       );
@@ -972,16 +970,14 @@ var DiversusFlower = function (_Heir2) {
   return DiversusFlower;
 }(Heir);
 
-exports.default = DiversusFlower;
-
-
 DiversusFlower.propTypes = {
   title: _propTypes2.default.string.isRequired,
   numberOfFronds: _propTypes2.default.number.isRequired,
   proportionOfCenter: _propTypes2.default.number.isRequired,
   reticleRays: _propTypes2.default.number,
   reticleRayLength: _propTypes2.default.number,
-  petalOpacity: _propTypes2.default.number
+  petalOpacity: _propTypes2.default.number,
+  demoMode: _propTypes2.default.bool
 };
 
 DiversusFlower.defaultProps = {
@@ -990,11 +986,13 @@ DiversusFlower.defaultProps = {
   proportionOfCenter: .33,
   reticleRays: 80,
   reticleRayLength: 90,
-  petalOpacity: 0.80
+  petalOpacity: 0.80,
+  maxRandomPetalCount: 50,
+  demoMode: true
 };
 
 /***/ }),
-/* 10 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1115,7 +1113,7 @@ function fromByteArray (uint8) {
 
 
 /***/ }),
-/* 11 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1129,9 +1127,9 @@ function fromByteArray (uint8) {
 
 
 
-var base64 = __webpack_require__(10)
-var ieee754 = __webpack_require__(14)
-var isArray = __webpack_require__(15)
+var base64 = __webpack_require__(9)
+var ieee754 = __webpack_require__(13)
+var isArray = __webpack_require__(14)
 
 exports.Buffer = Buffer
 exports.SlowBuffer = SlowBuffer
@@ -2909,13 +2907,13 @@ function isnan (val) {
   return val !== val // eslint-disable-line no-self-compare
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(21)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(20)))
 
 /***/ }),
-/* 12 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(13)(undefined);
+exports = module.exports = __webpack_require__(12)(undefined);
 // imports
 
 
@@ -2926,7 +2924,7 @@ exports.push([module.i, "h1 {\n\ttext-align: center;\n}\n", ""]);
 
 
 /***/ }),
-/* 13 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(Buffer) {/*
@@ -3005,10 +3003,10 @@ function toComment(sourceMap) {
   return '/*# ' + data + ' */';
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11).Buffer))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10).Buffer))
 
 /***/ }),
-/* 14 */
+/* 13 */
 /***/ (function(module, exports) {
 
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -3098,7 +3096,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 
 
 /***/ }),
-/* 15 */
+/* 14 */
 /***/ (function(module, exports) {
 
 var toString = {}.toString;
@@ -3109,7 +3107,7 @@ module.exports = Array.isArray || function (arr) {
 
 
 /***/ }),
-/* 16 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3126,8 +3124,8 @@ module.exports = Array.isArray || function (arr) {
 
 if (process.env.NODE_ENV !== 'production') {
   var invariant = __webpack_require__(2);
-  var warning = __webpack_require__(4);
-  var ReactPropTypesSecret = __webpack_require__(5);
+  var warning = __webpack_require__(3);
+  var ReactPropTypesSecret = __webpack_require__(4);
   var loggedTypeFailures = {};
 }
 
@@ -3178,7 +3176,7 @@ module.exports = checkPropTypes;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 17 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3239,7 +3237,7 @@ module.exports = function() {
 
 
 /***/ }),
-/* 18 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3256,10 +3254,10 @@ module.exports = function() {
 
 var emptyFunction = __webpack_require__(1);
 var invariant = __webpack_require__(2);
-var warning = __webpack_require__(4);
+var warning = __webpack_require__(3);
 
-var ReactPropTypesSecret = __webpack_require__(5);
-var checkPropTypes = __webpack_require__(16);
+var ReactPropTypesSecret = __webpack_require__(4);
+var checkPropTypes = __webpack_require__(15);
 
 module.exports = function(isValidElement, throwOnDirectAccess) {
   /* global Symbol */
@@ -3725,7 +3723,7 @@ module.exports = function(isValidElement, throwOnDirectAccess) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 19 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -3762,7 +3760,7 @@ var stylesInDom = {},
 	singletonElement = null,
 	singletonCounter = 0,
 	styleElementsInsertedAtTop = [],
-	fixUrls = __webpack_require__(20);
+	fixUrls = __webpack_require__(19);
 
 module.exports = function(list, options) {
 	if(typeof DEBUG !== "undefined" && DEBUG) {
@@ -4021,7 +4019,7 @@ function updateLink(linkElement, options, obj) {
 
 
 /***/ }),
-/* 20 */
+/* 19 */
 /***/ (function(module, exports) {
 
 
@@ -4116,7 +4114,7 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 21 */
+/* 20 */
 /***/ (function(module, exports) {
 
 var g;
