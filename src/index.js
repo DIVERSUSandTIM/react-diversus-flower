@@ -50,8 +50,8 @@ class Reticle extends React.Component {
       lines.push(<line x2={x} y2={y} key={'ray'+i}/>)
       i = i + inc;
     }
-    lines.push((<line x1={-100} y1={-100} x2={100} y2={100} stroke="red" key="tlbr"/>));
-    lines.push((<line x1={100} y1={-100} x2={-100} y2={100} stroke="red" key="trbl"/>));
+    lines.push((<line x1={-100} y1={-100} x2={100} y2={100} key="tlbr"/>));
+    lines.push((<line x1={100} y1={-100} x2={-100} y2={100} key="trbl"/>));
     return lines;
   }
   render() {
