@@ -589,6 +589,16 @@ function getRandomColor() {
   }
   return color;
 }
+function calcRadiusOfPackedCircles(centralRadius, numPacked) {
+  /*
+    r = (R * sin(theta/2) /(1 - sin(theta/2))
+  */
+  var theta = Math.PI * 2 / numPacked,
+      st2 = Math.sin(theta / 2),
+      R = centralRadius,
+      r = R * st2 / (1 - st2);
+  return r;
+}
 
 var Reticle = function (_React$Component) {
   _inherits(Reticle, _React$Component);
@@ -658,8 +668,7 @@ var Petal = exports.Petal = function (_React$Component2) {
 
     var _this2 = _possibleConstructorReturn(this, (Petal.__proto__ || Object.getPrototypeOf(Petal)).call(this, props));
 
-    _this2.flower = props.flower;
-    if (!_this2.flower) {
+    if (!_this2.props.flower) {
       throw new Error('no flower for ', _this2.props.relPos);
     }
     // state:
@@ -676,37 +685,46 @@ var Petal = exports.Petal = function (_React$Component2) {
       /*
           r = (R * sin(theta/2) /(1 - sin(theta/2))
       */
-      var theta = Math.PI * 2 / this.flower.props.numberOfFronds,
-          st2 = Math.sin(theta / 2),
-          R = this.flower.state.centralRadius,
-          r = R * st2 / (1 - st2);
-      return r;
+      return calcRadiusOfPackedCircles(this.props.flower.state.centralRadius, this.props.flower.props.numberOfFronds);
     }
   }, {
     key: 'componentWillMount',
     value: function componentWillMount() {
       // https://developmentarc.gitbooks.io/react-indepth/content/life_cycle/birth/premounting_with_componentwillmount.html
-      var centralRadius = this.flower.state.centralRadius // the radius of the central circle
-      ,
-          angle = getAngle(this.props.relPos),
-          petalRadius = this.calcPetalRadius(),
-          deltaState = {
+      //console.log("<Petal> props:",this.props);
+      var flower = this.props.flower;
+      var orderIdx = this.props.orderIdx;
+      var centralRadius = flower.state.centralRadius; // the radius of the central circle
+      var angle = getAngle(this.props.relPos);
+      var petalRadius = flower.state.radii[orderIdx];
+      //console.log('radii',flower.state.radii);
+      //console.log('dists',flower.state.dists);
+      var distFromFlowerCenter = flower.state.dists[orderIdx];
+      //, petalRadius =    this.calcPetalRadius()
+      //console.log('componentWillMount()',orderIdx, centralRadius, angle, petalRadius,distFromFlowerCenter);
+      var deltaState = {
         petalRadius: petalRadius,
-        cx: Math.cos(angle) * (centralRadius + petalRadius),
-        cy: Math.sin(angle) * (centralRadius + petalRadius) };
+        cx: Math.cos(angle) * distFromFlowerCenter,
+        cy: Math.sin(angle) * distFromFlowerCenter };
       this.setState(deltaState);
+      //console.log("<Petal> state:", this.state, deltaState);
     }
   }, {
     key: 'render',
     value: function render() {
-      var petalOpacity = this.flower.props.petalOpacity;
-      var fill = this.props.fill;
+      var _props = this.props,
+          fill = _props.fill,
+          orderIdx = _props.orderIdx,
+          flower = _props.flower;
+
+      var petalOpacity = flower.props.petalOpacity;
       var _state = this.state,
           cx = _state.cx,
           cy = _state.cy,
-          centralRadius = _state.centralRadius,
-          petalRadius = _state.petalRadius;
+          centralRadius = _state.centralRadius;
 
+      var petalRadius = flower.state.radii[orderIdx];
+      //console.log("Petal.render()", cx, cy, centralRadius, petalRadius);
       return _react2.default.createElement(
         'g',
         { strokeWidth: '1', stroke: 'black', x1: '0', y1: '0', fontSize: '5px' },
@@ -729,6 +747,7 @@ var Petal = exports.Petal = function (_React$Component2) {
 
 Petal.propTypes = {
   relPos: _propTypes2.default.number.isRequired,
+  initialRadius: _propTypes2.default.number,
   key: _propTypes2.default.string.isRequired,
   fill: _propTypes2.default.string.isRequired,
   initialPriority: _propTypes2.default.number.isRequired
@@ -737,6 +756,7 @@ Petal.propTypes = {
 Petal.defaultProps = {
   fill: 'orange',
   initialPriority: 1.0
+  //, initialRadius: 20
 };
 
 var Heir = function (_React$Component3) {
@@ -799,7 +819,7 @@ var DiversusFlower = exports.DiversusFlower = function (_Heir) {
   }, {
     key: 'startRandomStream',
     value: function startRandomStream(interval) {
-      interval = interval || 100;
+      interval = interval || this.props.randomStreamInterval;
       console.log('startRandomStream');
       var dis = this;
       this.randomStreamTimer = setInterval(function () {
@@ -830,6 +850,11 @@ var DiversusFlower = exports.DiversusFlower = function (_Heir) {
       }
     }
   }, {
+    key: 'calcFrondRadius',
+    value: function calcFrondRadius() {
+      return calcRadiusOfPackedCircles(this.state.centralRadius, this.props.numberOfFronds);
+    }
+  }, {
     key: 'getOrCreateFrond',
     value: function getOrCreateFrond(relPos) {
       var idx = getBinIdx(relPos, this.props.numberOfFronds);
@@ -841,7 +866,12 @@ var DiversusFlower = exports.DiversusFlower = function (_Heir) {
     value: function addPetal(args) {
       var idx = getBinIdx(args.relPos, this.props.numberOfFronds);
       var frondRelPos = getBinMid(idx, this.props.numberOfFronds);
-      var aFrond = this.state.fronds[idx] || { key: idx, relPos: frondRelPos, petals: [] };
+      var aFrond = this.state.fronds[idx] || {
+        key: idx,
+        relPos: frondRelPos,
+        petals: [],
+        radius: this.state.frondRadius
+      };
       aFrond.petals.push(args);
       this.state.fronds[idx] = aFrond;
       this.setState({ fronds: this.state.fronds });
@@ -865,6 +895,8 @@ var DiversusFlower = exports.DiversusFlower = function (_Heir) {
 
           if (typeof key == 'undefined') throw new Error('no key');
           retval.push(_react2.default.createElement(Petal, { relPos: aFrond.relPos, key: key,
+            XXXinitialRadius: this.state.radii[petalIdx + 1],
+            orderIdx: petalIdx + 1,
             fill: fillColor, flower: this }));
         }
       }
@@ -915,6 +947,38 @@ var DiversusFlower = exports.DiversusFlower = function (_Heir) {
     // https://nvbn.github.io/2017/03/14/react-generators/
 
   }, {
+    key: 'calcFrondRadius',
+    value: function calcFrondRadius(centralRadius) {
+      // receiving centralRadius as param is an ugly hack
+      return calcRadiusOfPackedCircles(centralRadius || this.state.centralRadius, this.props.numberOfFronds);
+    }
+  }, {
+    key: 'calcRadii',
+    value: function calcRadii() {
+      var maxFrondLength = 50;
+      var radii = [];
+      var packNum = this.props.numberOfFronds;
+      radii.push(this.state.centralRadius);
+      for (var i = 1; i < maxFrondLength; i++) {
+        radii[i] = calcRadiusOfPackedCircles(radii[i - 1], packNum);
+        packNum = 9;
+      }
+      console.log('calcRadii()', radii);
+      return radii;
+    }
+  }, {
+    key: 'calcDists',
+    value: function calcDists(radii) {
+      var dists = [],
+          accum = 0;
+      radii.forEach(function (currVal, idx) {
+        accum = accum + currVal;
+        dists[idx + 1] = accum;
+      });
+      console.log("calcDists()", dists);
+      return dists;
+    }
+  }, {
     key: 'componentWillMount',
     value: function componentWillMount() {
       // https://developmentarc.gitbooks.io/react-indepth/content/life_cycle/birth/premounting_with_componentwillmount.html
@@ -922,16 +986,22 @@ var DiversusFlower = exports.DiversusFlower = function (_Heir) {
         Prepare the initial state of the flower, here doing whatever calcs
         should preceed render() and follow constructor()
       */
-      var flowerMinDimension = 100; // TODO get this from the parent somehow?
-      this.setState({
-        centralRadius: this.props.proportionOfCenter * flowerMinDimension
-      });
+      var centralRadius = this.props.proportionOfCenter * this.props.flowerMinDimension;
+      var radii = this.calcRadii();
+      var dists = this.calcDists(radii);
+      console.log("setting centralRadius", centralRadius);
+      this.setState({ centralRadius: centralRadius });
+      this.setState({ radii: radii });
+      this.setState({ dists: dists });
+      this.setState({ frondRadius: this.calcFrondRadius(centralRadius) }); // HACK sending centralRadius
     }
   }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
       if (this.props.demoMode) {
         this.startRandomStream();
+      } else {
+        this.addRandomPetal();
       }
     }
 
@@ -993,6 +1063,7 @@ DiversusFlower.defaultProps = {
   reticleRayLength: 90,
   petalOpacity: 0.80,
   maxRandomPetalCount: 50,
+  flowerMinDimension: 100,
   demoMode: true
 };
 
