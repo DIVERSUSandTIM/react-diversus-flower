@@ -589,6 +589,11 @@ function getRandomColor() {
   }
   return color;
 }
+function getRandomId(prefix) {
+  var max = 10000000000;
+  prefix = prefix || 'id';
+  return prefix + Math.floor(Math.random() * Math.floor(max));
+}
 function calcRadiusOfPackedCircles(centralRadius, numPacked) {
   /*
     r = (R * sin(theta/2) /(1 - sin(theta/2))
@@ -599,6 +604,7 @@ function calcRadiusOfPackedCircles(centralRadius, numPacked) {
       r = R * st2 / (1 - st2);
   return r;
 }
+var deadCenter = { cx: 0, cy: 0 };
 
 var Reticle = function (_React$Component) {
   _inherits(Reticle, _React$Component);
@@ -680,6 +686,54 @@ var Petal = exports.Petal = function (_React$Component2) {
   }
 
   _createClass(Petal, [{
+    key: 'onClick',
+    value: function onClick(evt) {
+      //console.log(evt);
+      //console.log(this.state.cx,this.state.cy);
+      console.log("props", this.props);
+      this.props.flower.peekAtPetal(this);
+    }
+  }, {
+    key: 'onContextMenu',
+    value: function onContextMenu(evt) {
+      //console.log(evt);
+      //console.log(this.state.cx,this.state.cy);
+      evt.stopPropagation();
+      evt.preventDefault();
+      console.log("props", this.props);
+      this.props.flower.gotoPetal(this);
+    }
+  }, {
+    key: 'getCenter',
+    value: function getCenter() {
+      //console.log("getCenter()",this.props);
+      return { cx: this.state.cx, cy: this.state.cy };
+    }
+  }, {
+    key: 'getTheGoods',
+    value: function getTheGoods() {
+      var flower = this.props.flower;
+      // FIXME Is there a better way to get the frondIdx?  Put it on the Petal.props?
+      var frondIdx = getBinIdx(this.props.relPos, flower.props.numberOfFronds);
+      var frond = flower.state.fronds[frondIdx];
+      return {
+        frondIdx: frondIdx,
+        frond: frond,
+        args: frond.petals[this.props.orderIdx]
+      };
+    }
+  }, {
+    key: 'makePeekSized',
+    value: function makePeekSized() {
+      var _getTheGoods = this.getTheGoods(),
+          frondIdx = _getTheGoods.frondIdx,
+          frond = _getTheGoods.frond,
+          args = _getTheGoods.args;
+
+      console.log('makePeekSized() args:', args);
+      //document.selectQuery()
+    }
+  }, {
     key: 'componentWillMount',
     value: function componentWillMount() {
       // https://developmentarc.gitbooks.io/react-indepth/content/life_cycle/birth/premounting_with_componentwillmount.html
@@ -703,23 +757,28 @@ var Petal = exports.Petal = function (_React$Component2) {
           fill = _props.fill,
           orderIdx = _props.orderIdx,
           flower = _props.flower;
+      //console.log(this.props);
 
       var petalOpacity = flower.props.petalOpacity;
       var _state = this.state,
           cx = _state.cx,
           cy = _state.cy,
-          centralRadius = _state.centralRadius;
+          centralRadius = _state.centralRadius,
+          key = _state.key;
 
       var petalRadius = flower.state.radii[orderIdx];
       //console.log("Petal.render()", cx, cy, centralRadius, petalRadius);
       var label = this.props.relPos.toString().substring(0, 4);
       label = "d:" + Math.round(flower.state.dists[orderIdx]) + ";r:" + Math.round(petalRadius);
-      label = "";
+      label = ""; //+ key;
+      //key = orderIdx + "";
       return _react2.default.createElement(
         'g',
-        { strokeWidth: '1', stroke: 'black', x1: '0', y1: '0', fontSize: '5px' },
+        { strokeWidth: '1', stroke: 'black', x1: '0', y1: '0', fontSize: '5px', id: key },
         _react2.default.createElement('line', { x2: cx, y2: cy, stroke: 'none' }),
         _react2.default.createElement('circle', { cx: cx, cy: cy, r: petalRadius, stroke: 'black',
+          onClick: this.onClick.bind(this),
+          onContextMenu: this.onContextMenu.bind(this),
           opacity: petalOpacity, fill: fill }),
         _react2.default.createElement(
           'text',
@@ -738,9 +797,10 @@ var Petal = exports.Petal = function (_React$Component2) {
 Petal.propTypes = {
   relPos: _propTypes2.default.number.isRequired,
   initialRadius: _propTypes2.default.number,
-  key: _propTypes2.default.string.isRequired,
+  //  key: PropTypes.string.isRequired,
   fill: _propTypes2.default.string.isRequired,
-  initialPriority: _propTypes2.default.number.isRequired
+  initialPriority: _propTypes2.default.number.isRequired,
+  orderIdx: _propTypes2.default.number
 };
 
 Petal.defaultProps = {
@@ -833,9 +893,10 @@ var DiversusFlower = exports.DiversusFlower = function (_Heir) {
       this.randomPetalCount = this.randomPetalCount || 0;
       this.randomPetalCount++;
       var args = {
-        relPos: Math.random(),
-        key: Math.random(),
-        sortKey: Math.random(),
+        relPos: Math.random(), // not unique
+        key: getRandomId('p'), // unique!
+        sortKey: Math.random(), // not unique
+        url: getRandomId("http://example.org/"),
         fillColor: getRandomColor()
       };
       //console.log("args",args);
@@ -918,6 +979,52 @@ var DiversusFlower = exports.DiversusFlower = function (_Heir) {
       return calcRadiusOfPackedCircles(centralRadius || this.state.centralRadius, this.props.numberOfFronds);
     }
   }, {
+    key: 'peekAtPetal',
+    value: function peekAtPetal(petal) {
+      var petalCenter = petal.getCenter();
+      console.log("petalCenter:", petalCenter);
+      var newCenter = { cx: petalCenter.cx / 2, cy: petalCenter.cy / 2 };
+      this.shiftCenter(newCenter);
+      petal.makePeekSized();
+    }
+  }, {
+    key: 'gotoPetal',
+    value: function gotoPetal(petal) {
+      console.log("%cBOLDLY GO", "color:red;");
+      this.shiftCenter(petal.getCenter());
+    }
+  }, {
+    key: 'shiftCenter',
+    value: function shiftCenter(newCenter) {
+      var oldCenter = this.state.center || deadCenter;
+      this.setState({ center: newCenter });
+      this.setState({ oldCenter: oldCenter });
+      console.log("shiftCenter()", newCenter);
+    }
+  }, {
+    key: 'renderCenterer',
+    value: function renderCenterer() {
+      var newCenter = this.state.center || deadCenter;
+      var oldCenter = this.state.oldCenter;
+      if (JSON.stringify(newCenter) == JSON.stringify(oldCenter)) {
+        return [];
+      }
+      var newCenterStr = -1 * newCenter.cx + ' ' + -1 * newCenter.cy;
+      var oldCenterStr = oldCenter.cx + ' ' + oldCenter.cy;
+      console.log("renderCenterer()");
+      console.log('https://stackoverflow.com/a/22217506/1234699');
+      return _react2.default.createElement('animateTransform', {
+        attributeName: 'transform',
+        type: 'translate',
+        from: oldCenterStr,
+        to: newCenterStr,
+        begin: '0s',
+        dur: '.5s',
+        fill: 'freeze',
+        repeatCount: '0'
+      });
+    }
+  }, {
     key: 'calcRadii',
     value: function calcRadii(centralRadius) {
       var maxFrondLength = 50;
@@ -958,6 +1065,7 @@ var DiversusFlower = exports.DiversusFlower = function (_Heir) {
       this.setState({ radii: radii });
       this.setState({ dists: dists });
       this.setState({ frondRadius: this.calcFrondRadius(centralRadius) }); // HACK sending centralRadius
+      this.shiftCenter(deadCenter);
     }
   }, {
     key: 'componentDidMount',
@@ -987,6 +1095,7 @@ var DiversusFlower = exports.DiversusFlower = function (_Heir) {
         _react2.default.createElement(
           'svg',
           { height: '100%', width: '100%', viewBox: '-100 -100 200 200' },
+          this.renderCenterer(),
           _react2.default.createElement(
             'title',
             null,
@@ -1017,7 +1126,8 @@ DiversusFlower.propTypes = {
   reticleRays: _propTypes2.default.number,
   reticleRayLength: _propTypes2.default.number,
   petalOpacity: _propTypes2.default.number,
-  demoMode: _propTypes2.default.bool
+  demoMode: _propTypes2.default.bool,
+  randomStreamInterval: _propTypes2.default.number // how many msec between addRandomPetal
 };
 
 DiversusFlower.defaultProps = {
@@ -1030,7 +1140,8 @@ DiversusFlower.defaultProps = {
   petalOpacity: 0.80,
   maxRandomPetalCount: 50,
   flowerMinDimension: 100, // distance from center to closest top or side of SVG in pixels
-  demoMode: true
+  demoMode: true,
+  randomStreamInterval: 1
 };
 
 /*

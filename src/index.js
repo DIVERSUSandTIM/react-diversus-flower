@@ -25,6 +25,11 @@ function getRandomColor() {
   }
   return color;
 }
+function getRandomId(prefix) {
+  let max = 10000000000;
+  prefix = prefix || 'id';
+  return prefix + Math.floor(Math.random() * Math.floor(max));
+}
 function calcRadiusOfPackedCircles(centralRadius, numPacked) {
   /*
     r = (R * sin(theta/2) /(1 - sin(theta/2))
@@ -35,6 +40,8 @@ function calcRadiusOfPackedCircles(centralRadius, numPacked) {
       r = ((R * st2) / (1 - st2));
   return r;
 }
+let deadCenter = {cx: 0, cy: 0};
+
 class Reticle extends React.Component {
   renderLines() {
     var x,y,
@@ -91,6 +98,40 @@ export class Petal extends React.Component {
     //   cx: 0.0  // the x coordinate of the center of this petal
     //   cy: 0.0  // the y coordinate of the center of this petal
   }
+  onClick(evt) {
+    //console.log(evt);
+    //console.log(this.state.cx,this.state.cy);
+    console.log("props", this.props);
+    this.props.flower.peekAtPetal(this);
+  }
+  onContextMenu(evt) {
+    //console.log(evt);
+    //console.log(this.state.cx,this.state.cy);
+    evt.stopPropagation()
+    evt.preventDefault()
+    console.log("props", this.props);
+    this.props.flower.gotoPetal(this);
+  }
+  getCenter() {
+    //console.log("getCenter()",this.props);
+    return {cx: this.state.cx, cy: this.state.cy};
+  }
+  getTheGoods() {
+    let flower = this.props.flower;
+    // FIXME Is there a better way to get the frondIdx?  Put it on the Petal.props?
+    let frondIdx = getBinIdx(this.props.relPos, flower.props.numberOfFronds);
+    let frond = flower.state.fronds[frondIdx];
+    return {
+      frondIdx: frondIdx,
+      frond: frond,
+      args: frond.petals[this.props.orderIdx]
+    }
+  }
+  makePeekSized() {
+    let {frondIdx, frond, args} = this.getTheGoods();
+    console.log('makePeekSized() args:',args);
+    //document.selectQuery()
+  }
   componentWillMount() {
     // https://developmentarc.gitbooks.io/react-indepth/content/life_cycle/birth/premounting_with_componentwillmount.html
     let flower = this.props.flower;
@@ -107,18 +148,22 @@ export class Petal extends React.Component {
     //console.log("<Petal> state:", this.state, deltaState);
   }
   render() {
-    const {fill, orderIdx, flower} = this.props;
+    let {fill, orderIdx, flower} = this.props;
+    //console.log(this.props);
     const petalOpacity = flower.props.petalOpacity;
-    const {cx, cy, centralRadius} = this.state;
+    const {cx, cy, centralRadius, key} = this.state;
     const petalRadius = flower.state.radii[orderIdx];
     //console.log("Petal.render()", cx, cy, centralRadius, petalRadius);
     let label = this.props.relPos.toString().substring(0,4);
     label = "d:" + Math.round(flower.state.dists[orderIdx]) + ";r:"+Math.round(petalRadius);
-    label = "";
+    label = "" //+ key;
+    //key = orderIdx + "";
     return (
-      <g strokeWidth="1" stroke="black" x1="0" y1="0" fontSize="5px">
+      <g strokeWidth="1" stroke="black" x1="0" y1="0" fontSize="5px" id={key}>
         <line x2={cx} y2={cy} stroke="none"/>
         <circle cx={cx} cy={cy} r={petalRadius} stroke="black"
+           onClick={this.onClick.bind(this)}
+           onContextMenu={this.onContextMenu.bind(this)}
            opacity={petalOpacity} fill={fill}/>
         <text stroke="none" fill="white"
            textAnchor="middle" alignmentBaseline="middle"
@@ -131,9 +176,10 @@ export class Petal extends React.Component {
 Petal.propTypes = {
   relPos: PropTypes.number.isRequired,
   initialRadius: PropTypes.number,
-  key: PropTypes.string.isRequired,
+//  key: PropTypes.string.isRequired,
   fill: PropTypes.string.isRequired,
-  initialPriority: PropTypes.number.isRequired
+  initialPriority: PropTypes.number.isRequired,
+  orderIdx: PropTypes.number
 };
 
 Petal.defaultProps = {
@@ -198,9 +244,10 @@ export class DiversusFlower extends Heir {
     this.randomPetalCount = this.randomPetalCount || 0;
     this.randomPetalCount++;
     let args = {
-      relPos: Math.random(),
-      key: Math.random(),
-      sortKey: Math.random(),
+      relPos: Math.random(),  // not unique
+      key: getRandomId('p'),  // unique!
+      sortKey: Math.random(), // not unique
+      url: getRandomId("http://example.org/"),
       fillColor: getRandomColor()
     };
     //console.log("args",args);
@@ -266,6 +313,46 @@ export class DiversusFlower extends Heir {
     return calcRadiusOfPackedCircles(centralRadius || this.state.centralRadius,
                                      this.props.numberOfFronds);
   }
+  peekAtPetal(petal) {
+    var petalCenter = petal.getCenter();
+    console.log("petalCenter:", petalCenter);
+    let newCenter = {cx: petalCenter.cx/2, cy: petalCenter.cy/2};
+    this.shiftCenter(newCenter);
+    petal.makePeekSized();
+  }
+  gotoPetal(petal) {
+    console.log("%cBOLDLY GO", "color:red;");
+    this.shiftCenter(petal.getCenter());
+  }
+  shiftCenter(newCenter) {
+    let oldCenter = this.state.center || deadCenter;
+    this.setState({center: newCenter});
+    this.setState({oldCenter: oldCenter});
+    console.log("shiftCenter()", newCenter);
+  }
+  renderCenterer() {
+    let newCenter = this.state.center || deadCenter;
+    let oldCenter = this.state.oldCenter;
+    if (JSON.stringify(newCenter) == JSON.stringify(oldCenter)) {
+      return ([]);
+    }
+    let newCenterStr = (-1 * newCenter.cx) + ' ' + (-1 * newCenter.cy);
+    let oldCenterStr = oldCenter.cx + ' ' + oldCenter.cy;
+    console.log("renderCenterer()");
+    console.log('https://stackoverflow.com/a/22217506/1234699')
+    return (
+      <animateTransform
+         attributeName="transform"
+         type="translate"
+         from={oldCenterStr}
+         to={newCenterStr}
+         begin="0s"
+         dur=".5s"
+         fill="freeze"
+         repeatCount="0"
+        />
+    );
+  }
   calcRadii(centralRadius) {
     let maxFrondLength = 50;
     let radii = [centralRadius];
@@ -301,6 +388,7 @@ export class DiversusFlower extends Heir {
     this.setState({radii: radii});
     this.setState({dists: dists});
     this.setState({frondRadius: this.calcFrondRadius(centralRadius)}); // HACK sending centralRadius
+    this.shiftCenter(deadCenter);
   }
   componentDidMount() {
     if (this.props.demoMode) {
@@ -321,6 +409,7 @@ export class DiversusFlower extends Heir {
     return (
       <div  style={divStyle}>
         <svg height="100%" width="100%" viewBox="-100 -100 200 200" >
+          {this.renderCenterer()}
           <title>{title}</title>
           <g>
             <Reticle rayLength={this.props.reticleRayLength} rays={this.props.reticleRays}/>
@@ -343,7 +432,8 @@ DiversusFlower.propTypes = {
   reticleRays: PropTypes.number,
   reticleRayLength: PropTypes.number,
   petalOpacity: PropTypes.number,
-  demoMode: PropTypes.bool
+  demoMode: PropTypes.bool,
+  randomStreamInterval: PropTypes.number // how many msec between addRandomPetal
 };
 
 DiversusFlower.defaultProps = {
@@ -356,7 +446,8 @@ DiversusFlower.defaultProps = {
   petalOpacity: 0.80,
   maxRandomPetalCount: 50,
   flowerMinDimension: 100, // distance from center to closest top or side of SVG in pixels
-  demoMode: true
+  demoMode: true,
+  randomStreamInterval: 1
 };
 
 /*
