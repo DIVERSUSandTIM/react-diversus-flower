@@ -1,10 +1,6 @@
 # react-diversus-flower
 the diversus flower visualization as a react component
 
-## see a demo here:
-
-[DEMO](https://diversusandtim.github.io/react-diversus-flower/index.html)
-
 ## Usage:
 
 You should be able to add this to your package.json by adding a line to `dependencies` like this:
@@ -20,7 +16,9 @@ You should be able to add this to your package.json by adding a line to `depende
 
 - `npm run build`  - To produce the build file.
 
-- `npm run deploy` - To deploy the demo folder to gh-pages.
+- `npm run deploy` - To deploy the demo folder to gh-pages.  (scrip runs, demo does not)
+
+- `npm run deploy-gh-pages` - To deploy the gh-pages folder to gh-pages.  See at [DEMO](https://diversusandtim.github.io/react-diversus-flower/index.html)
 
 - `npm run test`   - To run test cases.
 

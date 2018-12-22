@@ -34,8 +34,9 @@
     "watch": "./node_modules/.bin/webpack --watch --config=webpack.build.config.js",
     "build": "./node_modules/.bin/webpack -p --config=webpack.build.config.js",
     "pre-deploy": "./node_modules/.bin/webpack --config=webpack.config.js",
+    "pre-gh-pages": "cp dist/index.js gh-pages/dist.js && cp demo/index.js gh-pages/index.js",
     "deploy": "npm run pre-deploy && git subtree push --prefix demo origin gh-pages",
-    "deploy-gh-pages": "git push origin :gh-pages && git subtree push --prefix gh-pages origin gh-pages",
+    "deploy-gh-pages": "npm run pre-gh-pages && git push origin :gh-pages && git subtree push --prefix gh-pages origin gh-pages",
     "start": "npm run build && npm run server",
     "test": "jest",
     "test-coverage": "yarn run jest -- --coverage"
