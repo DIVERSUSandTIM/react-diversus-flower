@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {DiversusFlower} from 'dist';
+import {DiversusFlower} from '../dist/index';
 
 class FlowerDemoApp extends React.Component {
   constructor(props) {
