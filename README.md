@@ -20,6 +20,9 @@ You should be able to add this to your package.json by adding a line to `depende
 
 - `npm run test`   - To run test cases.
 
+#### Help with deploy
+
+https://gist.github.com/cobyism/4730490
 
 ### DiversusFlower props
 
