@@ -35,6 +35,7 @@
     "build": "./node_modules/.bin/webpack -p --config=webpack.build.config.js",
     "pre-deploy": "./node_modules/.bin/webpack --config=webpack.config.js",
     "deploy": "npm run pre-deploy && git subtree push --prefix demo origin gh-pages",
+    "deploy-demo": "npm run pre-deploy && git push origin :gh-pages && git subtree push --prefix demo origin gh-pages",
     "start": "npm run build && npm run server",
     "test": "jest",
     "test-coverage": "yarn run jest -- --coverage"
