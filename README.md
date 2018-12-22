@@ -1,6 +1,10 @@
 # react-diversus-flower
 the diversus flower visualization as a react component
 
+## see a demo here:
+
+[DEMO](https://diversusandtim.github.io/react-diversus-flower/index.html)
+
 ## Usage:
 
 You should be able to add this to your package.json by adding a line to `dependencies` like this:
