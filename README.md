@@ -30,3 +30,4 @@ You should be able to add this to your package.json by adding a line to `depende
 * `demoMode` currently defaulting to `true`, will later default to `false`
 * `maxRandomPetalCount`
 * [all the props](https://github.com/DIVERSUSandTIM/react-diversus-flower/blob/master/src/index.js#L338)
+
