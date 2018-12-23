@@ -1106,7 +1106,7 @@ var DiversusFlower = exports.DiversusFlower = function (_Heir) {
             null,
             _react2.default.createElement(Reticle, { rayLength: this.props.reticleRayLength, rays: this.props.reticleRays }),
             _react2.default.createElement('circle', { cx: '0', cy: '0', r: this.state.centralRadius,
-              stroke: 'black', strokeWidth: '1', fill: 'red',
+              stroke: 'black', strokeWidth: '1', fill: 'grey',
               onClick: this.toggleRandomStream.bind(this) }),
             this.renderFronds()
           )

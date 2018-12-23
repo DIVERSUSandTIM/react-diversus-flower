@@ -738,16 +738,21 @@ var Petal = exports.Petal = function (_React$Component2) {
     value: function componentWillMount() {
       // https://developmentarc.gitbooks.io/react-indepth/content/life_cycle/birth/premounting_with_componentwillmount.html
       var flower = this.props.flower;
-      var orderIdx = this.props.orderIdx;
+      var orderIdx = this.props.orderIdx || 0;
       var centralRadius = flower.state.centralRadius; // the radius of the central circle
-      var angle = getAngle(this.props.relPos);
+      var delta = {};
       var petalRadius = flower.state.radii[orderIdx];
-      var distFromFlowerCenter = flower.state.dists[orderIdx];
-      var deltaState = {
-        petalRadius: petalRadius,
-        cx: Math.cos(angle) * distFromFlowerCenter,
-        cy: Math.sin(angle) * distFromFlowerCenter };
-      this.setState(deltaState);
+      delta.petalRadius = petalRadius;
+      if (this.props.relPos) {
+        var angle = getAngle(this.props.relPos);
+        var distFromFlowerCenter = flower.state.dists[orderIdx];
+        delta.cx = Math.cos(angle) * distFromFlowerCenter;
+        delta.cy = Math.sin(angle) * distFromFlowerCenter;
+      } else {
+        delta.cx = 0;
+        delta.cy = 0;
+      }
+      this.setState(delta);
       //console.log("<Petal> state:", this.state, deltaState);
     }
   }, {
@@ -768,8 +773,8 @@ var Petal = exports.Petal = function (_React$Component2) {
 
       var petalRadius = flower.state.radii[orderIdx];
       //console.log("Petal.render()", cx, cy, centralRadius, petalRadius);
-      var label = this.props.relPos.toString().substring(0, 4);
-      label = "d:" + Math.round(flower.state.dists[orderIdx]) + ";r:" + Math.round(petalRadius);
+      //let label = this.props.relPos.toString().substring(0,4);
+      var label = "d:" + Math.round(flower.state.dists[orderIdx]) + ";r:" + Math.round(petalRadius);
       label = ""; //+ key;
       //key = orderIdx + "";
       return _react2.default.createElement(
@@ -795,7 +800,7 @@ var Petal = exports.Petal = function (_React$Component2) {
 }(_react2.default.Component);
 
 Petal.propTypes = {
-  relPos: _propTypes2.default.number.isRequired,
+  relPos: _propTypes2.default.number,
   initialRadius: _propTypes2.default.number,
   //  key: PropTypes.string.isRequired,
   fill: _propTypes2.default.string.isRequired,
@@ -1105,9 +1110,7 @@ var DiversusFlower = exports.DiversusFlower = function (_Heir) {
             'g',
             null,
             _react2.default.createElement(Reticle, { rayLength: this.props.reticleRayLength, rays: this.props.reticleRays }),
-            _react2.default.createElement('circle', { cx: '0', cy: '0', r: this.state.centralRadius,
-              stroke: 'black', strokeWidth: '1', fill: 'grey',
-              onClick: this.toggleRandomStream.bind(this) }),
+            _react2.default.createElement(Petal, { orderIdx: 0, fill: 'yellow', flower: this }),
             this.renderFronds()
           )
         )

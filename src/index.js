@@ -135,16 +135,21 @@ export class Petal extends React.Component {
   componentWillMount() {
     // https://developmentarc.gitbooks.io/react-indepth/content/life_cycle/birth/premounting_with_componentwillmount.html
     let flower = this.props.flower;
-    let orderIdx = this.props.orderIdx;
+    let orderIdx = this.props.orderIdx || 0;
     let centralRadius = flower.state.centralRadius;  // the radius of the central circle
-    let angle = getAngle(this.props.relPos);
+    let delta = {} ;
     let petalRadius = flower.state.radii[orderIdx];
-    let distFromFlowerCenter = flower.state.dists[orderIdx];
-    let deltaState = {
-          petalRadius: petalRadius
-          , cx: (Math.cos(angle) * (distFromFlowerCenter))
-          , cy: (Math.sin(angle) * (distFromFlowerCenter))};
-    this.setState(deltaState);
+    delta.petalRadius = petalRadius;
+    if (this.props.relPos) {
+      let angle = getAngle(this.props.relPos);
+      let distFromFlowerCenter = flower.state.dists[orderIdx];
+      delta.cx = (Math.cos(angle) * (distFromFlowerCenter));
+      delta.cy = (Math.sin(angle) * (distFromFlowerCenter));
+    } else {
+      delta.cx = 0;
+      delta.cy = 0;
+    }
+    this.setState(delta);
     //console.log("<Petal> state:", this.state, deltaState);
   }
   render() {
@@ -154,8 +159,8 @@ export class Petal extends React.Component {
     const {cx, cy, centralRadius, key} = this.state;
     const petalRadius = flower.state.radii[orderIdx];
     //console.log("Petal.render()", cx, cy, centralRadius, petalRadius);
-    let label = this.props.relPos.toString().substring(0,4);
-    label = "d:" + Math.round(flower.state.dists[orderIdx]) + ";r:"+Math.round(petalRadius);
+    //let label = this.props.relPos.toString().substring(0,4);
+    let label = "d:" + Math.round(flower.state.dists[orderIdx]) + ";r:"+Math.round(petalRadius);
     label = "" //+ key;
     //key = orderIdx + "";
     return (
@@ -174,7 +179,7 @@ export class Petal extends React.Component {
 }
 
 Petal.propTypes = {
-  relPos: PropTypes.number.isRequired,
+  relPos: PropTypes.number,
   initialRadius: PropTypes.number,
 //  key: PropTypes.string.isRequired,
   fill: PropTypes.string.isRequired,
@@ -413,9 +418,7 @@ export class DiversusFlower extends Heir {
           <title>{title}</title>
           <g>
             <Reticle rayLength={this.props.reticleRayLength} rays={this.props.reticleRays}/>
-            <circle cx="0" cy="0" r={this.state.centralRadius}
-               stroke="black" strokeWidth="1" fill="grey"
-               onClick={this.toggleRandomStream.bind(this)}/>
+            <Petal orderIdx={0} fill="yellow" flower={this}/>
             {this.renderFronds()}
           </g>
         </svg>
